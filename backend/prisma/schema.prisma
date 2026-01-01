@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String    @id @default(cuid())
+  email            String?   @unique
+  passwordHash     String?
+  googleId         String?   @unique
+  name             String?
+  resetToken       String?   @unique
+  resetTokenExpiry DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  gamesCreated     Game[]    @relation("GameCreator")
+  sessions         Session[]
+
+  @@index([email])
+  @@index([googleId])
+  @@index([resetToken])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}
+
+model Game {
+  id             String   @id @default(cuid())
+  title          String
+  description    String?
+  creatorId      String
+  roomCode       String   @unique
+  status         String   @default("LOBBY")
+  currentRoundId String?  @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  currentRound   Round?   @relation("CurrentRound", fields: [currentRoundId], references: [id])
+  creator        User     @relation("GameCreator", fields: [creatorId], references: [id])
+  players        Player[]
+  rounds         Round[]
+
+  @@index([roomCode])
+  @@index([creatorId])
+  @@index([status])
+}
+
+model Round {
+  id         String     @id @default(cuid())
+  gameId     String
+  orderIndex Int
+  title      String
+  videoUrl   String?
+  state      String     @default("WAITING")
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  activeGame Game?      @relation("CurrentRound")
+  questions  Question[]
+  game       Game       @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([gameId, orderIndex])
+  @@index([gameId])
+}
+
+model Question {
+  id             String          @id @default(cuid())
+  roundId        String
+  orderIndex     Int
+  points         Int             @default(1)
+  createdAt      DateTime        @default(now())
+  correctAnswers CorrectAnswer[]
+  answers        Answer[]
+  round          Round           @relation(fields: [roundId], references: [id], onDelete: Cascade)
+
+  @@unique([roundId, orderIndex])
+  @@index([roundId])
+}
+
+model CorrectAnswer {
+  id            String   @id @default(cuid())
+  questionId    String
+  tmdbId        Int
+  tmdbType      String
+  title         String
+  originalTitle String?
+  year          Int?
+  posterPath    String?
+  question      Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([questionId])
+  @@index([tmdbId])
+}
+
+model Player {
+  id          String   @id @default(cuid())
+  gameId      String
+  socketId    String?
+  nickname    String
+  totalScore  Int      @default(0)
+  isConnected Boolean  @default(true)
+  joinedAt    DateTime @default(now())
+  lastSeenAt  DateTime @default(now())
+  answers     Answer[]
+  game        Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([gameId, nickname])
+  @@index([gameId])
+  @@index([socketId])
+}
+
+model Answer {
+  id            String   @id @default(cuid())
+  playerId      String
+  questionId    String
+  tmdbId        Int?
+  submittedText String?
+  isCorrect     Boolean  @default(false)
+  pointsEarned  Int      @default(0)
+  submittedAt   DateTime @default(now())
+  question      Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  player        Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([playerId, questionId])
+  @@index([playerId])
+  @@index([questionId])
+}
+
+model LeaderboardEntry {
+  id        String   @id @default(cuid())
+  gameId    String
+  playerId  String
+  rank      Int
+  score     Int
+  updatedAt DateTime @updatedAt
+
+  @@unique([gameId, playerId])
+  @@index([gameId, rank])
+}

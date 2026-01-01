@@ -1,0 +1,60 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-text-primary font-sans antialiased;
+  }
+}
+
+@layer components {
+
+  /* Card */
+  .card-primary {
+    @apply bg-background-elevated rounded-card p-6 shadow-card;
+  }
+
+  .card-primary:hover {
+    @apply shadow-card-hover;
+  }
+
+  /* Button */
+  .button-primary {
+    @apply bg-primary hover:bg-primary-dark text-white font-semibold px-6 py-3 rounded-button transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .button-secondary {
+    @apply bg-background-elevated hover:bg-background-hover text-text-primary font-semibold px-6 py-3 rounded-button border border-text-muted/20 transition-all duration-200 active:scale-95;
+  }
+
+  /* Input */
+  .input-field {
+    @apply bg-background-hover border border-text-muted/20 rounded-input px-4 py-3 text-text-primary placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none;
+  }
+
+  /* Glass effect (optional) */
+  .glass-effect {
+    @apply bg-white/5 backdrop-blur-md border border-white/10;
+  }
+}
+
+@layer utilities {
+
+  /* Custom scrollbar for webkit browsers */
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-track {
+    @apply bg-background-elevated rounded-full;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    @apply bg-text-muted/30 rounded-full hover:bg-text-muted/50;
+  }
+}

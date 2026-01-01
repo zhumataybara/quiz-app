@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:alpine
+    container_name: quiz-redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+  backend:
+    build: ./backend
+    container_name: quiz-backend
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - DATABASE_URL=file:./dev.db
+      - REDIS_URL=redis://redis:6379
+    env_file:
+      - ./backend/.env
+    volumes:
+      # Persist the database and migrations
+      - ./backend/prisma:/app/prisma
+    restart: always
+    depends_on:
+      - redis
+    # Ensure database is ready before starting
+    command: sh -c "npx prisma generate && npx prisma migrate deploy && node src/index.js"
+
+  frontend:
+    build: ./frontend
+    container_name: quiz-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: always

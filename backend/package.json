@@ -1,0 +1,28 @@
+{
+    "name": "movie-quiz-backend",
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "node --watch src/index.js",
+        "start": "node src/index.js",
+        "build": "prisma generate",
+        "prisma:migrate": "prisma migrate deploy",
+        "prisma:studio": "prisma studio",
+        "prisma:generate": "prisma generate"
+    },
+    "dependencies": {
+        "@prisma/client": "^5.10.0",
+        "axios": "^1.6.7",
+        "bcryptjs": "^2.4.3",
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.0",
+        "express": "^4.18.2",
+        "jsonwebtoken": "^9.0.2",
+        "nodemailer": "^7.0.12",
+        "redis": "^5.10.0",
+        "socket.io": "^4.7.0"
+    },
+    "devDependencies": {
+        "prisma": "^5.10.0"
+    }
+}
