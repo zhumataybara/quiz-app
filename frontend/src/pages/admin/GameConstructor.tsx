@@ -359,8 +359,8 @@ export function GameConstructor() {
         const { active, over } = event;
 
         if (over && active.id !== over.id) {
-            const oldIndex = currentRound.questions.findIndex((q, idx) => `question-${idx}` === active.id);
-            const newIndex = currentRound.questions.findIndex((q, idx) => `question-${idx}` === over.id);
+            const oldIndex = currentRound.questions.findIndex((_, idx) => `question-${idx}` === active.id);
+            const newIndex = currentRound.questions.findIndex((_, idx) => `question-${idx}` === over.id);
 
             setCurrentRound({
                 ...currentRound,
@@ -672,7 +672,7 @@ export function GameConstructor() {
                                 onDragEnd={handleDragEnd}
                             >
                                 <SortableContext
-                                    items={currentRound.questions.map((q, idx) => `question-${idx}`)}
+                                    items={currentRound.questions.map((_, idx) => `question-${idx}`)}
                                     strategy={verticalListSortingStrategy}
                                 >
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">

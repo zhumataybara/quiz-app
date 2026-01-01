@@ -29,10 +29,6 @@ export function GameControl() {
         message: string;
     }>>([]);
     const [showHistory, setShowHistory] = useState(false);
-    const [roundStats, setRoundStats] = useState<{
-        answeredCount: number;
-        totalCount: number;
-    } | null>(null);
 
     // Load game data from API
     useEffect(() => {

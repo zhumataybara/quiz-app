@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { socket } from '../services/socket';
 
 interface Player {
     id: string;
