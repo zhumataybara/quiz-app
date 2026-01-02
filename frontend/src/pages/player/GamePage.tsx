@@ -13,7 +13,7 @@ import { FinalLeaderboardModal } from '../../components/game/FinalLeaderboardMod
 
 export function GamePage() {
     const navigate = useNavigate();
-    const { game, playerId, playerNickname, progress } = useGameStore();
+    const { game, playerId, playerNickname, progress, answeredQuestionIds } = useGameStore();
     const { submitAnswer } = useSocket();
 
     const [submittedAnswers, setSubmittedAnswers] = useState<Set<string>>(new Set());
@@ -50,6 +50,14 @@ export function GamePage() {
         setSubmittedAnswers(new Set());
     }, [currentRound?.id]);
 
+    // Sync answeredQuestionIds from store to local state
+    useEffect(() => {
+        if (answeredQuestionIds.length > 0) {
+            setSubmittedAnswers(new Set(answeredQuestionIds));
+            console.log('✅ Synced submitted answers from store:', answeredQuestionIds.length);
+        }
+    }, [answeredQuestionIds]);
+
     // Listen for round transitions and results
     useEffect(() => {
         const handleRoundStarted = (data: any) => {
@@ -66,23 +74,12 @@ export function GamePage() {
             setShowRoundResults(true);
         };
 
-        // Listen for game_state to restore submitted answers
-        const handleGameState = (data: any) => {
-            // If answeredQuestionIds is provided (from reconnection), restore submitted state
-            if (data.answeredQuestionIds && Array.isArray(data.answeredQuestionIds)) {
-                setSubmittedAnswers(new Set(data.answeredQuestionIds));
-                console.log('Restored submitted answers:', data.answeredQuestionIds.length);
-            }
-        };
-
         socket.on('round_started', handleRoundStarted);
         socket.on('answers_revealed', handleAnswersRevealed);
-        socket.on('game_state', handleGameState);
 
         return () => {
             socket.off('round_started', handleRoundStarted);
             socket.off('answers_revealed', handleAnswersRevealed);
-            socket.off('game_state', handleGameState);
         };
     }, []);
 

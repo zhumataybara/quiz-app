@@ -38,25 +38,23 @@ interface GameState {
     // Game data
     game: Game | null;
     players: Player[];
-    leaderboard: (Player & { rank: number })[];
+    leaderboard: Array<{ position: number; nickname: string; score: number; }>;
+    progress: { current: number; total: number } | null;
+
+    // Submitted answers tracking
+    answeredQuestionIds: string[];
 
     // Connection
     isConnected: boolean;
 
-    progress?: {
-        currentRound: number;
-        totalRounds: number;
-        currentQuestion: number;
-        totalQuestions: number;
-    };
-
     // Actions
     setPlayerId: (id: string) => void;
     setPlayerNickname: (nickname: string) => void;
-    setGame: (game: Game) => void;
+    setGame: (game: Game | null) => void;
     setPlayers: (players: Player[]) => void;
-    setLeaderboard: (leaderboard: (Player & { rank: number })[]) => void;
-    setProgress: (progress: any) => void;
+    setLeaderboard: (leaderboard: Array<{ position: number; nickname: string; score: number; }>) => void;
+    setProgress: (progress: { current: number; total: number } | null) => void;
+    setAnsweredQuestionIds: (ids: string[]) => void;
     setConnected: (connected: boolean) => void;
     reset: () => void;
 }
@@ -67,7 +65,8 @@ export const useGameStore = create<GameState>((set) => ({
     game: null,
     players: [],
     leaderboard: [],
-    progress: undefined,
+    progress: null,
+    answeredQuestionIds: [],
     isConnected: false,
 
     setPlayerId: (id) => {
@@ -80,16 +79,11 @@ export const useGameStore = create<GameState>((set) => ({
         localStorage.setItem('quiz_player_nickname', nickname);
     },
 
-    setGame: (game) => {
-        set({ game });
-        if (game) {
-            localStorage.setItem('quiz_game_id', game.id);
-        }
-    },
-
+    setGame: (game) => set({ game }),
     setPlayers: (players) => set({ players }),
     setLeaderboard: (leaderboard) => set({ leaderboard }),
     setProgress: (progress) => set({ progress }),
+    setAnsweredQuestionIds: (answeredQuestionIds) => set({ answeredQuestionIds }),
     setConnected: (connected) => set({ isConnected: connected }),
 
     reset: () => {

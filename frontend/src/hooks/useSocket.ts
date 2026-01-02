@@ -36,6 +36,13 @@ export function useSocket() {
             if (data.progress) {
                 setProgress(data.progress);
             }
+
+            // Restore answered questions if provided (from reconnection)
+            if (data.answeredQuestionIds && Array.isArray(data.answeredQuestionIds)) {
+                const { setAnsweredQuestionIds } = useGameStore.getState();
+                setAnsweredQuestionIds(data.answeredQuestionIds);
+                console.log('✅ Restored submitted answers:', data.answeredQuestionIds.length);
+            }
         };
 
         const handlePlayerJoined = ({ player }: { player: any }) => {
