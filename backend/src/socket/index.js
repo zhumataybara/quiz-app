@@ -175,7 +175,14 @@ export function setupSocketHandlers(io) {
             try {
                 const round = await prisma.round.findUnique({
                     where: { id: roundId },
-                    include: { game: true }
+                    include: {
+                        game: {
+                            include: {
+                                rounds: { orderBy: { orderIndex: 'asc' } },
+                                players: { orderBy: { totalScore: 'desc' } }
+                            }
+                        }
+                    }
                 });
 
                 if (!round) {
@@ -195,13 +202,27 @@ export function setupSocketHandlers(io) {
                     data: { currentRoundId: roundId, status: 'ACTIVE' }
                 });
 
-                // Notify all players with updated game state
-                io.to(round.gameId).emit('round_started', { roundId });
+                // Calculate round number
+                const roundNumber = round.game.rounds.findIndex(r => r.id === roundId) + 1;
+                const totalRounds = round.game.rounds.length;
+
+                // Send personalized transition data to each player
+                round.game.players.forEach((player, index) => {
+                    io.to(player.socketId).emit('round_started', {
+                        roundId,
+                        roundNumber,
+                        totalRounds,
+                        roundTitle: round.title,
+                        playerScore: player.totalScore,
+                        playerRank: index + 1,
+                        totalPlayers: round.game.players.length
+                    });
+                });
 
                 // Send updated game state to all players
                 await broadcastGameState(io, round.gameId);
 
-                console.log(`🎬 Round ${roundId} started`);
+                console.log(`🎬 Round ${roundId} started (Round ${roundNumber}/${totalRounds})`);
             } catch (error) {
                 console.error('admin:start_round error:', error.message);
                 socket.emit('error', { message: 'Ошибка запуска раунда', code: 'START_ROUND_ERROR' });
@@ -300,6 +321,7 @@ export function setupSocketHandlers(io) {
                     })
                 ]);
 
+
                 // Get updated players for leaderboard
                 const updatedPlayers = await prisma.player.findMany({
                     where: { gameId: round.gameId },
@@ -308,14 +330,67 @@ export function setupSocketHandlers(io) {
 
                 const leaderboard = calculateLeaderboard(updatedPlayers);
 
-                // Send results to all players
-                io.to(round.gameId).emit('answers_revealed', {
-                    roundId,
-                    questions: round.questions,
-                    leaderboard
+                // Calculate round number
+                const allRounds = await prisma.round.findMany({
+                    where: { gameId: round.gameId },
+                    orderBy: { orderIndex: 'asc' }
                 });
+                const roundNumber = allRounds.findIndex(r => r.id === roundId) + 1;
 
-                console.log(`🎯 Answers revealed for round ${roundId}`);
+                // Send personalized results to each player
+                for (const player of updatedPlayers) {
+                    // Get player's answers for this round
+                    const playerAnswers = await prisma.answer.findMany({
+                        where: {
+                            playerId: player.id,
+                            question: { roundId }
+                        },
+                        include: {
+                            question: {
+                                include: { correctAnswers: true }
+                            }
+                        }
+                    });
+
+                    // Format questions with player's answers
+                    const questionResults = round.questions.map(q => {
+                        const playerAnswer = playerAnswers.find(a => a.questionId === q.id);
+                        const correctAnswer = q.correctAnswers[0]; // Assume first is correct
+
+                        return {
+                            questionTitle: q.title || correctAnswer?.title || 'Без названия',
+                            yourAnswer: playerAnswer?.submittedText || null,
+                            correctAnswer: correctAnswer?.title || 'Неизвестно',
+                            isCorrect: playerAnswer?.isCorrect || false,
+                            points: playerAnswer?.pointsEarned || 0,
+                            maxPoints: q.points
+                        };
+                    });
+
+                    // Calculate total earned points for this round
+                    const totalEarned = questionResults.reduce((sum, q) => sum + q.points, 0);
+                    const totalPossible = round.questions.reduce((sum, q) => sum + q.points, 0);
+
+                    // Find current rank
+                    const currentRank = updatedPlayers.findIndex(p => p.id === player.id) + 1;
+
+                    // Send personalized results
+                    io.to(player.socketId).emit('answers_revealed', {
+                        roundId,
+                        roundNumber,
+                        roundTitle: round.title,
+                        questions: questionResults,
+                        totalEarned,
+                        totalPossible,
+                        currentRank,
+                        rankChange: 0, // TODO: Calculate rank change from previous round
+                        totalScore: player.totalScore,
+                        totalPlayers: updatedPlayers.length,
+                        leaderboard
+                    });
+                }
+
+                console.log(`🎯 Answers revealed for round ${roundId} (Round ${roundNumber})`);
             } catch (error) {
                 console.error('admin:reveal_answers error:', error.message);
                 socket.emit('error', { message: 'Ошибка показа ответов', code: 'REVEAL_ERROR' });

@@ -4,9 +4,11 @@ import { motion } from 'framer-motion';
 import { useGameStore } from '../../hooks/useGameStore';
 import { useSocket } from '../../hooks/useSocket';
 import { QuestionInput } from '../../components/game/QuestionInput';
-
+import { socket } from '../../services/socket';
 import { ProgressBar } from '../../components/game/ProgressBar';
 import { PlayerHistoryModal } from '../../components/game/PlayerHistoryModal';
+import { RoundTransition } from '../../components/game/RoundTransition';
+import { RoundResultsModal } from '../../components/game/RoundResultsModal';
 
 export function GamePage() {
     const navigate = useNavigate();
@@ -16,6 +18,14 @@ export function GamePage() {
     const [submittedAnswers, setSubmittedAnswers] = useState<Set<string>>(new Set());
     const [showHistory, setShowHistory] = useState(false);
     const [isInitializing, setIsInitializing] = useState(true);
+
+    // Round transition state
+    const [showRoundTransition, setShowRoundTransition] = useState(false);
+    const [transitionData, setTransitionData] = useState<any>(null);
+
+    // Round results state
+    const [showRoundResults, setShowRoundResults] = useState(false);
+    const [resultsData, setResultsData] = useState<any>(null);
 
     const currentRound = game?.currentRound;
     const questions = currentRound?.questions || [];
@@ -34,6 +44,31 @@ export function GamePage() {
         // Clear submitted answers when round changes
         setSubmittedAnswers(new Set());
     }, [currentRound?.id]);
+
+    // Listen for round transitions and results
+    useEffect(() => {
+        const handleRoundStarted = (data: any) => {
+            console.log('Round started event:', data);
+            // Show transition modal
+            setTransitionData(data);
+            setShowRoundTransition(true);
+        };
+
+        const handleAnswersRevealed = (data: any) => {
+            console.log('Answers revealed event:', data);
+            // Show results modal
+            setResultsData(data);
+            setShowRoundResults(true);
+        };
+
+        socket.on('round_started', handleRoundStarted);
+        socket.on('answers_revealed', handleAnswersRevealed);
+
+        return () => {
+            socket.off('round_started', handleRoundStarted);
+            socket.off('answers_revealed', handleAnswersRevealed);
+        };
+    }, []);
 
     useEffect(() => {
         // Don't redirect while initializing (reconnection may be in progress)
@@ -197,6 +232,36 @@ export function GamePage() {
                 isOpen={showHistory}
                 onClose={() => setShowHistory(false)}
             />
+
+            {/* Round Transition Modal */}
+            {transitionData && (
+                <RoundTransition
+                    show={showRoundTransition}
+                    roundNumber={transitionData.roundNumber || 1}
+                    roundTitle={transitionData.roundTitle || currentRound?.title || ''}
+                    playerScore={transitionData.playerScore || 0}
+                    playerRank={transitionData.playerRank || 1}
+                    totalPlayers={transitionData.totalPlayers || 1}
+                    onClose={() => setShowRoundTransition(false)}
+                />
+            )}
+
+            {/* Round Results Modal */}
+            {resultsData && (
+                <RoundResultsModal
+                    show={showRoundResults}
+                    roundNumber={resultsData.roundNumber || 1}
+                    roundTitle={resultsData.roundTitle || currentRound?.title || ''}
+                    questions={resultsData.questions || []}
+                    totalEarned={resultsData.totalEarned || 0}
+                    totalPossible={resultsData.totalPossible || 0}
+                    currentRank={resultsData.currentRank || 1}
+                    rankChange={resultsData.rankChange || 0}
+                    totalScore={resultsData.totalScore || 0}
+                    totalPlayers={resultsData.totalPlayers || 1}
+                    onClose={() => setShowRoundResults(false)}
+                />
+            )}
         </div>
     );
 }
