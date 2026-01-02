@@ -66,12 +66,23 @@ export function GamePage() {
             setShowRoundResults(true);
         };
 
+        // Listen for game_state to restore submitted answers
+        const handleGameState = (data: any) => {
+            // If answeredQuestionIds is provided (from reconnection), restore submitted state
+            if (data.answeredQuestionIds && Array.isArray(data.answeredQuestionIds)) {
+                setSubmittedAnswers(new Set(data.answeredQuestionIds));
+                console.log('Restored submitted answers:', data.answeredQuestionIds.length);
+            }
+        };
+
         socket.on('round_started', handleRoundStarted);
         socket.on('answers_revealed', handleAnswersRevealed);
+        socket.on('game_state', handleGameState);
 
         return () => {
             socket.off('round_started', handleRoundStarted);
             socket.off('answers_revealed', handleAnswersRevealed);
+            socket.off('game_state', handleGameState);
         };
     }, []);
 

@@ -67,7 +67,12 @@ export function setupSocketHandlers(io) {
             try {
                 const player = await prisma.player.findUnique({
                     where: { id: playerId },
-                    include: { game: true }
+                    include: {
+                        game: true,
+                        answers: {
+                            select: { questionId: true }
+                        }
+                    }
                 });
 
                 if (!player || player.gameId !== gameId) {
@@ -90,9 +95,16 @@ export function setupSocketHandlers(io) {
 
                 // Send current game state
                 const gameState = await getPublicGameState(gameId);
-                socket.emit('game_state', gameState);
 
-                console.log(`🔄 Player "${player.nickname}" reconnected`);
+                // Add list of already answered questionIds
+                const answeredQuestionIds = player.answers.map(a => a.questionId);
+
+                socket.emit('game_state', {
+                    ...gameState,
+                    answeredQuestionIds // NEW: Frontend can restore submitted state
+                });
+
+                console.log(`🔄 Player "${player.nickname}" reconnected (${answeredQuestionIds.length} answers restored)`);
             } catch (error) {
                 console.error('reconnect_player error:', error.message);
                 socket.emit('error', { message: 'Ошибка переподключения', code: 'RECONNECT_ERROR' });
