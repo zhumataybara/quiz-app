@@ -101,6 +101,7 @@ export function useSocket() {
                 return;
             }
 
+            // Show error to user
             alert(message);
         };
 
