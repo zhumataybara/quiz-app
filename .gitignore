@@ -33,8 +33,7 @@ desktop.ini
 *~
 
 # Prisma
-backend/prisma/migrations/
-!backend/prisma/migrations/.gitkeep
+# Migrations are now tracked in Git
 
 # Testing
 coverage/
