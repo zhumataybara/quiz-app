@@ -40,7 +40,7 @@ export function GamePage() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsInitializing(false);
-        }, 1000); // Wait 1 second for reconnection
+        }, 3000); // Wait 3 seconds for reconnection (increased from 1s)
 
         return () => clearTimeout(timer);
     }, []);
@@ -79,6 +79,17 @@ export function GamePage() {
         // Don't redirect while initializing (reconnection may be in progress)
         if (isInitializing) return;
 
+        // Check localStorage for saved session
+        const savedPlayerId = localStorage.getItem('quiz_player_id');
+        const savedGameId = localStorage.getItem('quiz_game_id');
+
+        // If no game/player but we have saved data, wait for reconnection
+        if ((!game || !playerId) && savedPlayerId && savedGameId) {
+            console.log('Waiting for reconnection...');
+            return; // Don't redirect yet
+        }
+
+        // If truly no game/player data, redirect to join
         if (!game || !playerId) {
             navigate('/join');
             return;
