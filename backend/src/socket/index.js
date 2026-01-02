@@ -28,22 +28,16 @@ export function setupSocketHandlers(io) {
                     return;
                 }
 
-                // Check for duplicate nickname - REJECT instead of modifying
-                const existingPlayer = game.players.find(p => p.nickname === nickname);
-                if (existingPlayer) {
-                    socket.emit('error', {
-                        message: 'Игрок с таким именем уже в игре',
-                        code: 'NICKNAME_TAKEN'
-                    });
-                    return;
-                }
+                // Check for duplicate nickname and handle it by appending numbers
+                const existingNicknames = game.players.map(p => p.nickname);
+                const finalNickname = handleDuplicateNickname(nickname, existingNicknames);
 
                 // Create player
                 const player = await prisma.player.create({
                     data: {
                         gameId: game.id,
                         socketId: socket.id,
-                        nickname: nickname,
+                        nickname: finalNickname,
                         isConnected: true
                     }
                 });
@@ -61,7 +55,7 @@ export function setupSocketHandlers(io) {
                 const gameState = await getPublicGameState(game.id);
                 socket.emit('game_state', gameState);
 
-                console.log(`👤 Player "${nickname}" joined game ${roomCode}`);
+                console.log(`👤 Player "${finalNickname}" joined game ${roomCode}`);
             } catch (error) {
                 console.error('join_game error:', error.message);
                 socket.emit('error', { message: 'Ошибка подключения к игре', code: 'JOIN_ERROR' });
