@@ -118,7 +118,13 @@ export function useSocket() {
             console.log('Game reset - clearing state');
             const { reset } = useGameStore.getState();
             reset();
-            window.location.href = '/join'; // Force redirect
+
+            // Only redirect to /join if we're on a player page
+            // Admins should stay on their control panel
+            if (window.location.pathname.startsWith('/game') ||
+                window.location.pathname.startsWith('/lobby')) {
+                window.location.href = '/join'; // Force redirect
+            }
         };
 
         // Register all event listeners
