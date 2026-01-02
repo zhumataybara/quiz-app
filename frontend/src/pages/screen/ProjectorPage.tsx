@@ -86,10 +86,26 @@ export function ProjectorPage() {
             }
         };
 
+        // Also listen to admin_game_state (since we join as admin)
+        const handleAdminGameState = (data: any) => {
+            console.log('Projector received admin_game_state:', data);
+            if (data.game) {
+                setGame(data.game);
+            }
+            if (data.players) {
+                setPlayers(data.players);
+            }
+            if (data.progress) {
+                setProgress(data.progress);
+            }
+        };
+
         socket.on('game_state', handleGameState);
+        socket.on('admin_game_state', handleAdminGameState);
 
         return () => {
             socket.off('game_state', handleGameState);
+            socket.off('admin_game_state', handleAdminGameState);
         };
     }, []);
 
