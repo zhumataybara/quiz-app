@@ -39,7 +39,12 @@ interface GameState {
     game: Game | null;
     players: Player[];
     leaderboard: Array<{ position: number; nickname: string; score: number; }>;
-    progress: { current: number; total: number } | null;
+    progress?: {
+        currentRound: number;
+        totalRounds: number;
+        currentQuestion: number;
+        totalQuestions: number;
+    };
 
     // Submitted answers tracking
     answeredQuestionIds: string[];
@@ -53,7 +58,7 @@ interface GameState {
     setGame: (game: Game | null) => void;
     setPlayers: (players: Player[]) => void;
     setLeaderboard: (leaderboard: Array<{ position: number; nickname: string; score: number; }>) => void;
-    setProgress: (progress: { current: number; total: number } | null) => void;
+    setProgress: (progress: any) => void;
     setAnsweredQuestionIds: (ids: string[]) => void;
     setConnected: (connected: boolean) => void;
     reset: () => void;
@@ -65,7 +70,7 @@ export const useGameStore = create<GameState>((set) => ({
     game: null,
     players: [],
     leaderboard: [],
-    progress: null,
+    progress: undefined,
     answeredQuestionIds: [],
     isConnected: false,
 
