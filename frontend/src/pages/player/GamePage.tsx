@@ -9,6 +9,7 @@ import { ProgressBar } from '../../components/game/ProgressBar';
 import { PlayerHistoryModal } from '../../components/game/PlayerHistoryModal';
 import { RoundTransition } from '../../components/game/RoundTransition';
 import { RoundResultsModal } from '../../components/game/RoundResultsModal';
+import { FinalLeaderboardModal } from '../../components/game/FinalLeaderboardModal';
 
 export function GamePage() {
     const navigate = useNavigate();
@@ -26,6 +27,10 @@ export function GamePage() {
     // Round results state
     const [showRoundResults, setShowRoundResults] = useState(false);
     const [resultsData, setResultsData] = useState<any>(null);
+
+    // Final leaderboard state
+    const [showFinalLeaderboard, setShowFinalLeaderboard] = useState(false);
+    const [finalLeaderboardData, setFinalLeaderboardData] = useState<any>(null);
 
     const currentRound = game?.currentRound;
     const questions = currentRound?.questions || [];
@@ -259,7 +264,29 @@ export function GamePage() {
                     rankChange={resultsData.rankChange || 0}
                     totalScore={resultsData.totalScore || 0}
                     totalPlayers={resultsData.totalPlayers || 1}
-                    onClose={() => setShowRoundResults(false)}
+                    onClose={() => {
+                        setShowRoundResults(false);
+                        // If this was the last round, show final leaderboard
+                        if (resultsData.isLastRound) {
+                            setFinalLeaderboardData({
+                                players: resultsData.leaderboard || [],
+                                yourRank: resultsData.currentRank || 1,
+                                yourScore: resultsData.totalScore || 0
+                            });
+                            setShowFinalLeaderboard(true);
+                        }
+                    }}
+                />
+            )}
+
+            {/* Final Leaderboard Modal */}
+            {finalLeaderboardData && (
+                <FinalLeaderboardModal
+                    show={showFinalLeaderboard}
+                    players={finalLeaderboardData.players}
+                    yourRank={finalLeaderboardData.yourRank}
+                    yourScore={finalLeaderboardData.yourScore}
+                    onClose={() => setShowFinalLeaderboard(false)}
                 />
             )}
         </div>

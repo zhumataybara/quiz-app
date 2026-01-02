@@ -229,6 +229,50 @@ export function GameControl() {
                     </button>
                 );
             case 'REVEALED':
+                // Check if game is finished
+                if (game.status === 'FINISHED') {
+                    return (
+                        <div className="space-y-4">
+                            {/* Game Completed Message */}
+                            <div className="text-center p-8 bg-gradient-to-r from-success/10 to-info/10 border-2 border-success/30 rounded-2xl">
+                                <div className="text-6xl mb-3">🏆</div>
+                                <h2 className="text-3xl font-bold text-success mb-2">
+                                    Игра завершена!
+                                </h2>
+                                <p className="text-text-secondary">
+                                    Все раунды пройдены
+                                </p>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <button
+                                onClick={() => window.open(`/screen/${game.roomCode}`, '_blank')}
+                                className="w-full bg-gradient-to-r from-accent-purple to-accent-pink text-white font-bold text-lg py-4 rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                            >
+                                <span>📊</span>
+                                <span>Посмотреть результаты на экране</span>
+                            </button>
+
+                            <button
+                                onClick={() => setShowResetModal(true)}
+                                className="w-full bg-gradient-to-r from-primary to-accent-orange text-white font-bold text-lg py-4 rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                            >
+                                <span>🔄</span>
+                                <span>Начать новую игру</span>
+                            </button>
+
+                            <button
+                                onClick={() => navigate('/admin')}
+                                className="w-full bg-background-elevated text-text-primary font-semibold text-lg py-4 rounded-xl border border-white/10 hover:bg-background-hover hover:border-primary/30 active:scale-95 transition-all flex items-center justify-center gap-2"
+                            >
+                                <span>🏠</span>
+                                <span>Вернуться в админку</span>
+                            </button>
+                        </div>
+                    );
+                }
+
+                // Normal round revealed state (not last round)
                 const isLastRound = selectedRoundIndex === rounds.length - 1;
                 return (
                     <button
@@ -236,19 +280,14 @@ export function GameControl() {
                             if (navigator.vibrate) navigator.vibrate(50);
                             if (!isLastRound) setSelectedRoundIndex(selectedRoundIndex + 1);
                         }}
-                        className={`w-full h-48 rounded-2xl border-4 border-dashed border-text-muted text-text-muted text-xl font-bold p-6 flex flex-col items-center justify-center gap-4 ${!isLastRound ? 'hover:border-primary hover:text-primary active:scale-95' : ''}`}
+                        disabled={isLastRound}
+                        className={`w-full h-48 rounded-2xl border-4 border-dashed text-xl font-bold p-6 flex flex-col items-center justify-center gap-4 ${isLastRound
+                                ? 'border-text-muted/30 text-text-muted/50 cursor-not-allowed'
+                                : 'border-primary text-primary hover:bg-primary/10 active:scale-95 transition-all'
+                            }`}
                     >
-                        {isLastRound ? (
-                            <>
-                                <span>КОНЕЦ</span>
-                                <span>Игра завершена</span>
-                            </>
-                        ) : (
-                            <>
-                                <span>ДАЛЕЕ</span>
-                                <span>Следующий раунд</span>
-                            </>
-                        )}
+                        <span>ДАЛЕЕ</span>
+                        <span>Следующий раунд</span>
                     </button>
                 );
             default:

@@ -378,6 +378,7 @@ export function setupSocketHandlers(io) {
                     io.to(player.socketId).emit('answers_revealed', {
                         roundId,
                         roundNumber,
+                        totalRounds: allRounds.length,
                         roundTitle: round.title,
                         questions: questionResults,
                         totalEarned,
@@ -386,11 +387,22 @@ export function setupSocketHandlers(io) {
                         rankChange: 0, // TODO: Calculate rank change from previous round
                         totalScore: player.totalScore,
                         totalPlayers: updatedPlayers.length,
+                        isLastRound: roundNumber === allRounds.length,
                         leaderboard
                     });
                 }
 
-                console.log(`🎯 Answers revealed for round ${roundId} (Round ${roundNumber})`);
+                // If this is the last round, mark game as FINISHED
+                const isLastRound = roundNumber === allRounds.length;
+                if (isLastRound) {
+                    await prisma.game.update({
+                        where: { id: round.gameId },
+                        data: { status: 'FINISHED' }
+                    });
+                    console.log(`🏁 Game ${round.gameId} marked as FINISHED`);
+                }
+
+                console.log(`🎯 Answers revealed for round ${roundId} (Round ${roundNumber}/${allRounds.length})`);
             } catch (error) {
                 console.error('admin:reveal_answers error:', error.message);
                 socket.emit('error', { message: 'Ошибка показа ответов', code: 'REVEAL_ERROR' });
