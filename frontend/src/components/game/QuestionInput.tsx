@@ -15,15 +15,26 @@ interface QuestionInputProps {
     onSubmit: (tmdbId: number, text: string) => void;
     disabled: boolean;
     submitted: boolean;
+    restoredAnswer?: { tmdbId?: number; text?: string; };
 }
 
-export function QuestionInput({ onSubmit, disabled, submitted }: QuestionInputProps) {
+export function QuestionInput({ onSubmit, disabled, submitted, restoredAnswer }: QuestionInputProps) {
     const [query, setQuery] = useState('');
     const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
     const [showDropdown, setShowDropdown] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
 
     const { results, loading } = useTMDBSearch(query);
+
+    // If we have a restored answer but no local selectedMovie, create a pseudo-movie for display
+    const displayMovie = selectedMovie || (submitted && restoredAnswer ? {
+        id: restoredAnswer.tmdbId || 0,
+        title: restoredAnswer.text || 'Ответ отправлен',
+        originalTitle: restoredAnswer.text || '',
+        year: null, // We don't have year in restored answer
+        posterPath: null, // We don't have poster in restored answer (unless fetched)
+        mediaType: 'movie'
+    } as Movie : null);
 
     const handleSelect = (movie: Movie) => {
         setSelectedMovie(movie);
@@ -53,7 +64,7 @@ export function QuestionInput({ onSubmit, disabled, submitted }: QuestionInputPr
     return (
         <div className="relative">
             {/* Editing Mode - Show input field */}
-            {isEditing && selectedMovie ? (
+            {isEditing && displayMovie ? (
                 <>
                     <input
                         type="text"
@@ -72,7 +83,7 @@ export function QuestionInput({ onSubmit, disabled, submitted }: QuestionInputPr
                         placeholder="Введите название фильма или сериала..."
                         className="input-field w-full text-base min-h-[48px]"
                     />
-                    {/* Cancel button */}
+                    {/* ... rest of editing mode ... */}
                     <button
                         onClick={handleCancelEdit}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-error transition-colors text-sm"
@@ -127,7 +138,7 @@ export function QuestionInput({ onSubmit, disabled, submitted }: QuestionInputPr
                         )}
                     </AnimatePresence>
                 </>
-            ) : submitted && selectedMovie ? (
+            ) : submitted && displayMovie ? (
                 /* Submitted State */
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
@@ -136,17 +147,22 @@ export function QuestionInput({ onSubmit, disabled, submitted }: QuestionInputPr
                     className={`bg-background-elevated border border-white/10 rounded-input px-4 py-3 flex items-center justify-between ${!disabled ? 'cursor-pointer hover:border-primary/30 transition-all' : ''}`}
                 >
                     <div className="flex items-center gap-3">
-                        {selectedMovie.posterPath && (
+                        {displayMovie.posterPath ? (
                             <img
-                                src={`https://image.tmdb.org/t/p/w92${selectedMovie.posterPath}`}
-                                alt={selectedMovie.title}
+                                src={`https://image.tmdb.org/t/p/w92${displayMovie.posterPath}`}
+                                alt={displayMovie.title}
                                 className="w-12 h-18 object-cover rounded"
                             />
+                        ) : (
+                            <div className="w-12 h-18 bg-background-hover rounded flex items-center justify-center text-xs text-text-muted flex-shrink-0 border border-white/10">
+                                🎞️
+                            </div>
                         )}
                         <div>
-                            <div className="font-semibold text-text-primary">{selectedMovie.title}</div>
+                            <div className="font-semibold text-text-primary">{displayMovie.title}</div>
                             <div className="text-sm text-text-muted">
-                                {selectedMovie.year}, {selectedMovie.mediaType === 'tv' ? 'Сериал' : 'Фильм'}
+                                {displayMovie.year || 'Ответ принят'}
+                                {displayMovie.mediaType && `, ${displayMovie.mediaType === 'tv' ? 'Сериал' : 'Фильм'}`}
                             </div>
                         </div>
                     </div>
@@ -162,7 +178,7 @@ export function QuestionInput({ onSubmit, disabled, submitted }: QuestionInputPr
                         </button>
                     )}
                 </motion.div>
-            ) : selectedMovie ? (
+            ) : displayMovie ? (
                 /* Selected but not submitted */
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
@@ -170,17 +186,22 @@ export function QuestionInput({ onSubmit, disabled, submitted }: QuestionInputPr
                     className="bg-background-hover border border-primary rounded-input px-4 py-3 flex items-center justify-between"
                 >
                     <div className="flex items-center gap-3">
-                        {selectedMovie.posterPath && (
+                        {displayMovie.posterPath ? (
                             <img
-                                src={`https://image.tmdb.org/t/p/w92${selectedMovie.posterPath}`}
-                                alt={selectedMovie.title}
+                                src={`https://image.tmdb.org/t/p/w92${displayMovie.posterPath}`}
+                                alt={displayMovie.title}
                                 className="w-12 h-18 object-cover rounded"
                             />
+                        ) : (
+                            <div className="w-12 h-18 bg-background-hover rounded flex items-center justify-center text-xs text-text-muted flex-shrink-0 border border-white/10">
+                                🎞️
+                            </div>
                         )}
                         <div>
-                            <div className="font-semibold text-text-primary">{selectedMovie.title}</div>
+                            <div className="font-semibold text-text-primary">{displayMovie.title}</div>
                             <div className="text-sm text-text-muted">
-                                {selectedMovie.year}, {selectedMovie.mediaType === 'tv' ? 'Сериал' : 'Фильм'}
+                                {displayMovie.year || 'Новый выбор'}
+                                {displayMovie.mediaType && `, ${displayMovie.mediaType === 'tv' ? 'Сериал' : 'Фильм'}`}
                             </div>
                         </div>
                     </div>

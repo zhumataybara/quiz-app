@@ -96,15 +96,19 @@ export function setupSocketHandlers(io) {
                 // Send current game state
                 const gameState = await getPublicGameState(gameId);
 
-                // Send ALL answered questionIds (frontend will filter by current round)
-                const answeredQuestionIds = player.answers.map(a => a.questionId);
+                // Send ALL answered questions with details (frontend will filter by current round)
+                const answeredQuestions = player.answers.map(a => ({
+                    questionId: a.questionId,
+                    tmdbId: a.tmdbId,
+                    text: a.submittedText
+                }));
 
                 socket.emit('game_state', {
                     ...gameState,
-                    answeredQuestionIds
+                    answeredQuestions
                 });
 
-                console.log(`🔄 Player "${player.nickname}" reconnected (${answeredQuestionIds.length} total answers)`);
+                console.log(`🔄 Player "${player.nickname}" reconnected (${answeredQuestions.length} answers restored)`);
             } catch (error) {
                 console.error('reconnect_player error:', error.message);
                 socket.emit('error', { message: 'Ошибка переподключения', code: 'RECONNECT_ERROR' });

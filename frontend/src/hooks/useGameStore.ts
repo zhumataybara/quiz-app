@@ -47,7 +47,11 @@ interface GameState {
     };
 
     // Submitted answers tracking
-    answeredQuestionIds: string[];
+    answeredQuestions: Array<{
+        questionId: string;
+        tmdbId?: number;
+        text?: string;
+    }>;
 
     // Connection
     isConnected: boolean;
@@ -59,7 +63,7 @@ interface GameState {
     setPlayers: (players: Player[]) => void;
     setLeaderboard: (leaderboard: Array<{ position: number; nickname: string; score: number; }>) => void;
     setProgress: (progress: any) => void;
-    setAnsweredQuestionIds: (ids: string[]) => void;
+    setAnsweredQuestions: (answers: Array<{ questionId: string; tmdbId?: number; text?: string; }>) => void;
     setConnected: (connected: boolean) => void;
     reset: () => void;
 }
@@ -71,7 +75,7 @@ export const useGameStore = create<GameState>((set) => ({
     players: [],
     leaderboard: [],
     progress: undefined,
-    answeredQuestionIds: [],
+    answeredQuestions: [],
     isConnected: false,
 
     setPlayerId: (id) => {
@@ -88,7 +92,7 @@ export const useGameStore = create<GameState>((set) => ({
     setPlayers: (players) => set({ players }),
     setLeaderboard: (leaderboard) => set({ leaderboard }),
     setProgress: (progress) => set({ progress }),
-    setAnsweredQuestionIds: (answeredQuestionIds) => set({ answeredQuestionIds }),
+    setAnsweredQuestions: (answeredQuestions) => set({ answeredQuestions }),
     setConnected: (connected) => set({ isConnected: connected }),
 
     reset: () => {
@@ -99,6 +103,7 @@ export const useGameStore = create<GameState>((set) => ({
             players: [],
             leaderboard: [],
             progress: undefined,
+            answeredQuestions: [],
             isConnected: false,
         });
         localStorage.removeItem('quiz_player_id');

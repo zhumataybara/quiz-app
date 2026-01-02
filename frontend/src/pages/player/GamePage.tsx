@@ -13,7 +13,7 @@ import { FinalLeaderboardModal } from '../../components/game/FinalLeaderboardMod
 
 export function GamePage() {
     const navigate = useNavigate();
-    const { game, playerId, playerNickname, progress, answeredQuestionIds } = useGameStore();
+    const { game, playerId, playerNickname, progress, answeredQuestions } = useGameStore();
     const { submitAnswer } = useSocket();
 
     const [submittedAnswers, setSubmittedAnswers] = useState<Set<string>>(new Set());
@@ -48,24 +48,24 @@ export function GamePage() {
     // Sync answeredQuestionIds from store to local state, filtering by current round
     useEffect(() => {
         console.log('🔄 Sync Effect Triggered:', {
-            answeredIdsCount: answeredQuestionIds.length,
+            answeredCount: answeredQuestions.length,
             hasCurrentRound: !!currentRound,
             questionsCount: currentRound?.questions?.length || 0,
             hasQuestions: !!currentRound?.questions
         });
 
-        if (answeredQuestionIds.length > 0 && currentRound?.questions && Array.isArray(currentRound.questions)) {
+        if (answeredQuestions.length > 0 && currentRound?.questions && Array.isArray(currentRound.questions)) {
             const currentRoundQuestionIds = currentRound.questions.map((q: any) => q.id);
-            const filteredAnswers = answeredQuestionIds.filter(id => currentRoundQuestionIds.includes(id));
+            const filteredAnswers = answeredQuestions.filter(a => currentRoundQuestionIds.includes(a.questionId));
 
             console.log('🔍 Filtering answers:', {
-                allAnswered: answeredQuestionIds,
+                allAnswered: answeredQuestions,
                 currentQuestions: currentRoundQuestionIds,
                 matches: filteredAnswers
             });
 
             if (filteredAnswers.length > 0) {
-                setSubmittedAnswers(new Set(filteredAnswers));
+                setSubmittedAnswers(new Set(filteredAnswers.map(a => a.questionId)));
                 console.log(`✅ Synced ${filteredAnswers.length} answers for current round`);
             } else {
                 console.log('⚠️ No answers matched current round questions');
@@ -73,7 +73,7 @@ export function GamePage() {
         } else {
             console.log('⏳ Waiting for data to sync answers (Missing answers or questions)...');
         }
-    }, [answeredQuestionIds, currentRound]);
+    }, [answeredQuestions, currentRound]);
 
     // Listen for round transitions and results
     useEffect(() => {
@@ -210,28 +210,32 @@ export function GamePage() {
 
                 {/* Questions */}
                 <div className="space-y-4">
-                    {questions.map((question, index) => (
-                        <motion.div
-                            key={question.id}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                        >
-                            <div className="bg-background-elevated border border-white/5 rounded-xl p-4 shadow-sm hover:border-primary/30 transition-all group">
-                                <div className="mb-2 flex items-center gap-2">
-                                    <span className="text-primary/80 font-medium text-sm bg-primary/10 px-2 py-0.5 rounded-md group-hover:bg-primary/20 transition-colors">
-                                        Вопрос {question.orderIndex + 1}
-                                    </span>
-                                </div>
+                    {questions.map((question, index) => {
+                        const answer = answeredQuestions.find(a => a.questionId === question.id);
+                        return (
+                            <motion.div
+                                key={question.id}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                            >
+                                <div className="bg-background-elevated border border-white/5 rounded-xl p-4 shadow-sm hover:border-primary/30 transition-all group">
+                                    <div className="mb-2 flex items-center gap-2">
+                                        <span className="text-primary/80 font-medium text-sm bg-primary/10 px-2 py-0.5 rounded-md group-hover:bg-primary/20 transition-colors">
+                                            Вопрос {question.orderIndex + 1}
+                                        </span>
+                                    </div>
 
-                                <QuestionInput
-                                    onSubmit={(tmdbId, text) => handleSubmitAnswer(question.id, tmdbId, text)}
-                                    disabled={isInputDisabled}
-                                    submitted={submittedAnswers.has(question.id)}
-                                />
-                            </div>
-                        </motion.div>
-                    ))}
+                                    <QuestionInput
+                                        onSubmit={(tmdbId, text) => handleSubmitAnswer(question.id, tmdbId, text)}
+                                        disabled={isInputDisabled}
+                                        submitted={submittedAnswers.has(question.id)}
+                                        restoredAnswer={answer}
+                                    />
+                                </div>
+                            </motion.div>
+                        )
+                    })}
                 </div>
 
                 {/* Status Messages */}

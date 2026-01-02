@@ -38,10 +38,14 @@ export function useSocket() {
             }
 
             // Restore answered questions if provided (from reconnection)
-            if (data.answeredQuestionIds && Array.isArray(data.answeredQuestionIds)) {
-                const { setAnsweredQuestionIds } = useGameStore.getState();
-                setAnsweredQuestionIds(data.answeredQuestionIds);
-                console.log('✅ Restored submitted answers:', data.answeredQuestionIds.length);
+            if (data.answeredQuestions && Array.isArray(data.answeredQuestions)) {
+                const { setAnsweredQuestions } = useGameStore.getState();
+                setAnsweredQuestions(data.answeredQuestions);
+                console.log('✅ Restored submitted answers:', data.answeredQuestions.length);
+            } else if (data.answeredQuestionIds && Array.isArray(data.answeredQuestionIds)) {
+                // Fallback for ID-only data
+                const { setAnsweredQuestions } = useGameStore.getState();
+                setAnsweredQuestions(data.answeredQuestionIds.map((id: string) => ({ questionId: id })));
             }
         };
 
