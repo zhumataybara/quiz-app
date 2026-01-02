@@ -47,12 +47,31 @@ export function GamePage() {
 
     // Sync answeredQuestionIds from store to local state, filtering by current round
     useEffect(() => {
-        if (answeredQuestionIds.length > 0 && currentRound?.questions) {
-            const currentRoundQuestionIds = currentRound.questions.map(q => q.id);
+        console.log('🔄 Sync Effect Triggered:', {
+            answeredIdsCount: answeredQuestionIds.length,
+            hasCurrentRound: !!currentRound,
+            questionsCount: currentRound?.questions?.length || 0,
+            hasQuestions: !!currentRound?.questions
+        });
+
+        if (answeredQuestionIds.length > 0 && currentRound?.questions && Array.isArray(currentRound.questions)) {
+            const currentRoundQuestionIds = currentRound.questions.map((q: any) => q.id);
             const filteredAnswers = answeredQuestionIds.filter(id => currentRoundQuestionIds.includes(id));
 
-            setSubmittedAnswers(new Set(filteredAnswers));
-            console.log(`✅ Synced ${filteredAnswers.length} answers for current round (from ${answeredQuestionIds.length} total)`);
+            console.log('🔍 Filtering answers:', {
+                allAnswered: answeredQuestionIds,
+                currentQuestions: currentRoundQuestionIds,
+                matches: filteredAnswers
+            });
+
+            if (filteredAnswers.length > 0) {
+                setSubmittedAnswers(new Set(filteredAnswers));
+                console.log(`✅ Synced ${filteredAnswers.length} answers for current round`);
+            } else {
+                console.log('⚠️ No answers matched current round questions');
+            }
+        } else {
+            console.log('⏳ Waiting for data to sync answers (Missing answers or questions)...');
         }
     }, [answeredQuestionIds, currentRound]);
 
