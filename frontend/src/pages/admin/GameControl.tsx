@@ -52,7 +52,7 @@ export function GameControl() {
         socket.on('round_locked', ({ roundId }) => {
             console.log('Round locked:', roundId);
             addHistoryEvent('round_lock', `Ввод ответов закрыт`);
-            // No need to reload, game_state will follow
+            loadGameData(); // Reload to update button state
         });
 
         socket.on('answers_revealed', ({ roundId }) => {
