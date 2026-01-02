@@ -37,9 +37,36 @@ app.use(express.json());
 import apiRoutes from './routes/api.js';
 app.use('/api', apiRoutes);
 
+import { exec } from 'child_process';
+
 // Health check
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'Movie Quiz API is running' });
+});
+
+// Emergency Migration Endpoint
+app.get('/api/migrate-db', (req, res) => {
+    console.log('🔄 Triggering manual database migration...');
+    exec('npx prisma db push', (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Migration error: ${error.message}`);
+            return res.status(500).json({
+                success: false,
+                message: 'Migration Failed',
+                error: error.message,
+                stderr
+            });
+        }
+        if (stderr) {
+            console.log(`Migration stderr: ${stderr}`);
+        }
+        console.log(`Migration stdout: ${stdout}`);
+        res.json({
+            success: true,
+            message: 'Database migrated successfully!',
+            output: stdout
+        });
+    });
 });
 
 // Setup Socket.io handlers
