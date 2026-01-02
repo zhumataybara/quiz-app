@@ -45,13 +45,16 @@ export function GamePage() {
         return () => clearTimeout(timer);
     }, []);
 
-    // Sync answeredQuestionIds from store to local state
+    // Sync answeredQuestionIds from store to local state, filtering by current round
     useEffect(() => {
-        if (answeredQuestionIds.length > 0) {
-            setSubmittedAnswers(new Set(answeredQuestionIds));
-            console.log('✅ Synced submitted answers from store:', answeredQuestionIds.length);
+        if (answeredQuestionIds.length > 0 && currentRound?.questions) {
+            const currentRoundQuestionIds = currentRound.questions.map(q => q.id);
+            const filteredAnswers = answeredQuestionIds.filter(id => currentRoundQuestionIds.includes(id));
+
+            setSubmittedAnswers(new Set(filteredAnswers));
+            console.log(`✅ Synced ${filteredAnswers.length} answers for current round (from ${answeredQuestionIds.length} total)`);
         }
-    }, [answeredQuestionIds]);
+    }, [answeredQuestionIds, currentRound]);
 
     // Listen for round transitions and results
     useEffect(() => {

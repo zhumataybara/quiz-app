@@ -68,17 +68,7 @@ export function setupSocketHandlers(io) {
                 const player = await prisma.player.findUnique({
                     where: { id: playerId },
                     include: {
-                        game: {
-                            include: {
-                                currentRound: {
-                                    include: {
-                                        questions: {
-                                            select: { id: true }
-                                        }
-                                    }
-                                }
-                            }
-                        },
+                        game: true,
                         answers: {
                             select: { questionId: true }
                         }
@@ -106,18 +96,15 @@ export function setupSocketHandlers(io) {
                 // Send current game state
                 const gameState = await getPublicGameState(gameId);
 
-                // Filter answered questions to ONLY current round's questions
-                const currentRoundQuestionIds = player.game.currentRound?.questions.map(q => q.id) || [];
-                const answeredQuestionIds = player.answers
-                    .map(a => a.questionId)
-                    .filter(qId => currentRoundQuestionIds.includes(qId));
+                // Send ALL answered questionIds (frontend will filter by current round)
+                const answeredQuestionIds = player.answers.map(a => a.questionId);
 
                 socket.emit('game_state', {
                     ...gameState,
-                    answeredQuestionIds // Only current round answers
+                    answeredQuestionIds
                 });
 
-                console.log(`🔄 Player "${player.nickname}" reconnected (${answeredQuestionIds.length} answers restored from current round)`);
+                console.log(`🔄 Player "${player.nickname}" reconnected (${answeredQuestionIds.length} total answers)`);
             } catch (error) {
                 console.error('reconnect_player error:', error.message);
                 socket.emit('error', { message: 'Ошибка переподключения', code: 'RECONNECT_ERROR' });
