@@ -177,9 +177,20 @@ export function useSocket() {
         socket.emit('reconnect_player', { playerId, gameId });
     }, []);
 
-    const submitAnswer = useCallback((playerId: string, questionId: string, tmdbId: number, text: string) => {
+    const submitAnswer = useCallback((
+        playerId: string,
+        questionId: string,
+        tmdbId: number,
+        text: string,
+        metadata?: {
+            year?: number | null;
+            posterPath?: string | null;
+            originalTitle?: string | null;
+            mediaType?: 'movie' | 'tv';
+        }
+    ) => {
         console.log(`Submitting answer: ${text} (${tmdbId})`);
-        socket.emit('submit_answer', { playerId, questionId, tmdbId, text });
+        socket.emit('submit_answer', { playerId, questionId, tmdbId, text, metadata });
     }, []);
 
     const startHeartbeat = useCallback((playerId: string) => {

@@ -12,10 +12,19 @@ interface Movie {
 }
 
 interface QuestionInputProps {
-    onSubmit: (tmdbId: number, text: string) => void;
+    onSubmit: (tmdbId: number, text: string, movie?: Movie) => void;
     disabled: boolean;
     submitted: boolean;
-    restoredAnswer?: { tmdbId?: number; text?: string; };
+    restoredAnswer?: {
+        tmdbId?: number;
+        text?: string;
+        metadata?: {
+            year?: number | null;
+            posterPath?: string | null;
+            originalTitle?: string | null;
+            mediaType?: 'movie' | 'tv';
+        };
+    };
 }
 
 export function QuestionInput({ onSubmit, disabled, submitted, restoredAnswer }: QuestionInputProps) {
@@ -30,10 +39,10 @@ export function QuestionInput({ onSubmit, disabled, submitted, restoredAnswer }:
     const displayMovie = selectedMovie || (submitted && restoredAnswer ? {
         id: restoredAnswer.tmdbId || 0,
         title: restoredAnswer.text || 'Ответ отправлен',
-        originalTitle: restoredAnswer.text || '',
-        year: null, // We don't have year in restored answer
-        posterPath: null, // We don't have poster in restored answer (unless fetched)
-        mediaType: 'movie'
+        originalTitle: restoredAnswer.metadata?.originalTitle || restoredAnswer.text || '',
+        year: restoredAnswer.metadata?.year || null,
+        posterPath: restoredAnswer.metadata?.posterPath || null,
+        mediaType: restoredAnswer.metadata?.mediaType || 'movie'
     } as Movie : null);
 
     const handleSelect = (movie: Movie) => {
@@ -41,7 +50,7 @@ export function QuestionInput({ onSubmit, disabled, submitted, restoredAnswer }:
         setQuery('');
         setShowDropdown(false);
         setIsEditing(false);
-        onSubmit(movie.id, movie.title);
+        onSubmit(movie.id, movie.title, movie);
     };
 
     const handleEdit = () => {

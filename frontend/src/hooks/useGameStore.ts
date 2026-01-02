@@ -51,6 +51,12 @@ interface GameState {
         questionId: string;
         tmdbId?: number;
         text?: string;
+        metadata?: {
+            year?: number | null;
+            posterPath?: string | null;
+            originalTitle?: string | null;
+            mediaType?: 'movie' | 'tv';
+        };
     }>;
 
     // Connection
@@ -63,7 +69,17 @@ interface GameState {
     setPlayers: (players: Player[]) => void;
     setLeaderboard: (leaderboard: Array<{ position: number; nickname: string; score: number; }>) => void;
     setProgress: (progress: any) => void;
-    setAnsweredQuestions: (answers: Array<{ questionId: string; tmdbId?: number; text?: string; }>) => void;
+    setAnsweredQuestions: (answers: Array<{
+        questionId: string;
+        tmdbId?: number;
+        text?: string;
+        metadata?: {
+            year?: number | null;
+            posterPath?: string | null;
+            originalTitle?: string | null;
+            mediaType?: 'movie' | 'tv';
+        };
+    }>) => void;
     setConnected: (connected: boolean) => void;
     reset: () => void;
 }

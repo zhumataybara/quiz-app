@@ -125,7 +125,11 @@ model Answer {
   playerId      String
   questionId    String
   tmdbId        Int?
+  tmdbType      String?  // 'movie' or 'tv'
   submittedText String?
+  originalTitle String?
+  year          Int?
+  posterPath    String?
   isCorrect     Boolean  @default(false)
   pointsEarned  Int      @default(0)
   submittedAt   DateTime @default(now())
