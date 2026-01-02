@@ -45,11 +45,6 @@ export function GamePage() {
         return () => clearTimeout(timer);
     }, []);
 
-    useEffect(() => {
-        // Clear submitted answers when round changes
-        setSubmittedAnswers(new Set());
-    }, [currentRound?.id]);
-
     // Sync answeredQuestionIds from store to local state
     useEffect(() => {
         if (answeredQuestionIds.length > 0) {
