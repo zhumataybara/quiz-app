@@ -40,7 +40,7 @@ export function GamePage() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsInitializing(false);
-        }, 3000); // Wait 3 seconds for reconnection (increased from 1s)
+        }, 5000); // Wait 5 seconds for reconnection (increased from 3s)
 
         return () => clearTimeout(timer);
     }, []);
@@ -100,22 +100,25 @@ export function GamePage() {
         };
     }, []);
 
+    // Redirect logic
     useEffect(() => {
         // Don't redirect while initializing (reconnection may be in progress)
-        if (isInitializing) return;
-
-        // Check localStorage for saved session
-        const savedPlayerId = localStorage.getItem('quiz_player_id');
-        const savedGameId = localStorage.getItem('quiz_game_id');
-
-        // If no game/player but we have saved data, wait for reconnection
-        if ((!game || !playerId) && savedPlayerId && savedGameId) {
-            console.log('Waiting for reconnection...');
-            return; // Don't redirect yet
+        if (isInitializing) {
+            return;
         }
 
-        // If truly no game/player data, redirect to join
+        // Check localStorage for player data before redirecting
+        const storedPlayerId = localStorage.getItem('quiz_player_id');
+        const storedGameId = localStorage.getItem('quiz_game_id');
+
         if (!game || !playerId) {
+            // If we have localStorage data but no store data, wait a bit more for reconnection
+            if (storedPlayerId && storedGameId) {
+                console.log('⏳ Player data in localStorage, waiting for reconnection...');
+                return;
+            }
+
+            console.log('❌ No game or player data, redirecting to join');
             navigate('/join');
             return;
         }
