@@ -65,7 +65,9 @@ export function ResetPasswordPage() {
                     animate={{ opacity: 1, scale: 1 }}
                     className="card-primary max-w-md w-full text-center"
                 >
-                    <div className="text-6xl mb-4">✅</div>
+                    <svg className="w-20 h-20 mx-auto mb-4 text-success" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
                     <h1 className="text-heading-lg mb-2">Пароль изменен!</h1>
                     <p className="text-text-secondary mb-4">
                         Ваш пароль успешно изменен. Перенаправление на страницу входа...

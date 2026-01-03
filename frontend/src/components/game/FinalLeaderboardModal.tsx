@@ -84,7 +84,9 @@ export function FinalLeaderboardModal({
                             animate={{ opacity: 1, y: 0 }}
                             className="text-center mb-8"
                         >
-                            <div className="text-6xl mb-4">🏆</div>
+                            <svg className="w-20 h-20 mx-auto mb-4 text-warning" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z" />
+                            </svg>
                             <h1 className="text-4xl font-bold text-text-primary mb-2">
                                 Игра завершена!
                             </h1>
@@ -106,8 +108,8 @@ export function FinalLeaderboardModal({
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: index * 0.1 }}
                                             className={`flex items-center gap-4 p-4 rounded-xl transition-all ${isYou
-                                                    ? 'bg-primary/20 border-2 border-primary shadow-lg scale-105'
-                                                    : 'bg-background-hover border border-white/5'
+                                                ? 'bg-primary/20 border-2 border-primary shadow-lg scale-105'
+                                                : 'bg-background-hover border border-white/5'
                                                 }`}
                                         >
                                             {/* Rank */}
@@ -129,9 +131,9 @@ export function FinalLeaderboardModal({
 
                                             {/* Score */}
                                             <div className={`text-2xl font-bold ${rank === 1 ? 'text-accent-orange' :
-                                                    rank === 2 ? 'text-gray-300' :
-                                                        rank === 3 ? 'text-orange-600' :
-                                                            'text-text-secondary'
+                                                rank === 2 ? 'text-gray-300' :
+                                                    rank === 3 ? 'text-orange-600' :
+                                                        'text-text-secondary'
                                                 }`}>
                                                 {player.totalScore}
                                             </div>
@@ -147,8 +149,8 @@ export function FinalLeaderboardModal({
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: players.length * 0.1 + 0.2 }}
                             className={`p-6 rounded-2xl mb-6 text-center ${isTopThree
-                                    ? 'bg-gradient-to-r from-accent-orange/20 to-accent-pink/20 border-2 border-accent-orange/50'
-                                    : 'bg-background-elevated/50 border border-white/10'
+                                ? 'bg-gradient-to-r from-accent-orange/20 to-accent-pink/20 border-2 border-accent-orange/50'
+                                : 'bg-background-elevated/50 border border-white/10'
                                 }`}
                         >
                             {isTopThree && (
