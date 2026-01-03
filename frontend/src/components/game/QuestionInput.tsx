@@ -13,6 +13,7 @@ interface Movie {
 
 interface QuestionInputProps {
     onSubmit: (tmdbId: number, text: string, movie?: Movie) => void;
+    onClear?: () => void; // Callback to clear answer from store
     disabled: boolean;
     submitted: boolean;
     restoredAnswer?: {
@@ -27,7 +28,7 @@ interface QuestionInputProps {
     };
 }
 
-export function QuestionInput({ onSubmit, disabled, submitted, restoredAnswer }: QuestionInputProps) {
+export function QuestionInput({ onSubmit, onClear, disabled, submitted, restoredAnswer }: QuestionInputProps) {
     const [query, setQuery] = useState('');
     const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
     const [showDropdown, setShowDropdown] = useState(false);
@@ -68,6 +69,10 @@ export function QuestionInput({ onSubmit, disabled, submitted, restoredAnswer }:
         setSelectedMovie(null);
         setQuery('');
         setIsEditing(false);
+        // Call parent callback to remove from store
+        if (onClear) {
+            onClear();
+        }
     };
 
     return (

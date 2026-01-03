@@ -135,6 +135,21 @@ export function GamePage() {
         setSubmittedAnswers((prev) => new Set(prev).add(questionId));
     };
 
+    const handleClearAnswer = (questionId: string) => {
+        // Remove from local state
+        setSubmittedAnswers((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(questionId);
+            return newSet;
+        });
+
+        // Remove from store
+        const { setAnsweredQuestions } = useGameStore.getState();
+        const currentAnswers = useGameStore.getState().answeredQuestions;
+        const filteredAnswers = currentAnswers.filter(a => a.questionId !== questionId);
+        setAnsweredQuestions(filteredAnswers);
+    };
+
     if (!game || !currentRound) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -238,6 +253,7 @@ export function GamePage() {
 
                                     <QuestionInput
                                         onSubmit={(tmdbId, text) => handleSubmitAnswer(question.id, tmdbId, text)}
+                                        onClear={() => handleClearAnswer(question.id)}
                                         disabled={isInputDisabled}
                                         submitted={submittedAnswers.has(question.id)}
                                         restoredAnswer={answer}
