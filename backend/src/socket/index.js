@@ -58,7 +58,7 @@ export function setupSocketHandlers(io) {
                 console.log(`👤 Player "${finalNickname}" joined game ${roomCode}`);
             } catch (error) {
                 console.error('join_game error:', error.message);
-                socket.emit('error', { message: 'Ошибка подключения к игре', code: 'JOIN_ERROR' });
+                socket.emit('error', { message: `Ошибка подключения к игре: ${error.message}`, code: 'JOIN_ERROR' });
             }
         });
 
@@ -111,7 +111,7 @@ export function setupSocketHandlers(io) {
                 console.log(`🔄 Player "${player.nickname}" reconnected (${answeredQuestions.length} answers restored)`);
             } catch (error) {
                 console.error('reconnect_player error:', error.message);
-                socket.emit('error', { message: 'Ошибка переподключения', code: 'RECONNECT_ERROR' });
+                socket.emit('error', { message: `Ошибка переподключения: ${error.message}`, code: 'RECONNECT_ERROR' });
             }
         });
 
@@ -182,7 +182,7 @@ export function setupSocketHandlers(io) {
                 console.log(`📝 ${player.nickname} ${answer.id ? 'updated' : 'submitted'} answer for question ${questionId}`);
             } catch (error) {
                 console.error('submit_answer error:', error.message);
-                socket.emit('error', { message: 'Ошибка отправки ответа', code: 'SUBMIT_ERROR' });
+                socket.emit('error', { message: `Ошибка отправки ответа: ${error.message}`, code: 'SUBMIT_ERROR' });
             }
         });
 
@@ -241,7 +241,7 @@ export function setupSocketHandlers(io) {
                 console.log(`🎬 Round ${roundId} started (Round ${roundNumber}/${totalRounds})`);
             } catch (error) {
                 console.error('admin:start_round error:', error.message);
-                socket.emit('error', { message: 'Ошибка запуска раунда', code: 'START_ROUND_ERROR' });
+                socket.emit('error', { message: `Ошибка запуска раунда: ${error.message}`, code: 'START_ROUND_ERROR' });
             }
         });
 
@@ -258,7 +258,7 @@ export function setupSocketHandlers(io) {
                 console.log(`🔒 Round ${roundId} locked`);
             } catch (error) {
                 console.error('admin:lock_round error:', error.message);
-                socket.emit('error', { message: 'Ошибка блокировки раунда', code: 'LOCK_ROUND_ERROR' });
+                socket.emit('error', { message: `Ошибка блокировки раунда: ${error.message}`, code: 'LOCK_ROUND_ERROR' });
             }
         });
 
@@ -421,7 +421,7 @@ export function setupSocketHandlers(io) {
                 console.log(`🎯 Answers revealed for round ${roundId} (Round ${roundNumber}/${allRounds.length})`);
             } catch (error) {
                 console.error('admin:reveal_answers error:', error.message);
-                socket.emit('error', { message: 'Ошибка показа ответов', code: 'REVEAL_ERROR' });
+                socket.emit('error', { message: `Ошибка показа ответов: ${error.message}`, code: 'REVEAL_ERROR' });
             }
         });
 
@@ -472,7 +472,7 @@ export function setupSocketHandlers(io) {
 
             } catch (error) {
                 console.error('admin:reset_game error:', error.message);
-                socket.emit('error', { message: 'Ошибка сброса игры', code: 'RESET_ERROR' });
+                socket.emit('error', { message: `Ошибка сброса игры: ${error.message}`, code: 'RESET_ERROR' });
             }
         });
 
@@ -500,6 +500,7 @@ export function setupSocketHandlers(io) {
                 socket.emit('admin_game_state', gameState);
             } catch (error) {
                 console.error('admin:join_room error:', error.message);
+                socket.emit('error', { message: `Ошибка подключения админа: ${error.message}`, code: 'ADMIN_JOIN_ERROR' });
             }
         });
 
