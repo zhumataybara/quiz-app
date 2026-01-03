@@ -188,10 +188,6 @@ export function GameControl() {
     const renderActionList = () => {
         if (!controlledRound) return <div className="text-center text-text-muted">Нет активного раунда</div>;
 
-        const isWaiting = controlledRound.state === 'WAITING';
-        const isActive = controlledRound.state === 'ACTIVE';
-        const isLocked = controlledRound.state === 'LOCKED';
-        const isRevealed = controlledRound.state === 'REVEALED';
         const isGameFinished = game.status === 'FINISHED';
         const isLastRound = selectedRoundIndex === rounds.length - 1;
 
@@ -224,126 +220,76 @@ export function GameControl() {
             );
         }
 
-        return (
-            <div className="space-y-2">
-                {/* Action 1: Start Round */}
-                <button
-                    onClick={() => {
-                        if (navigator.vibrate) navigator.vibrate(50);
-                        handleStartRound(controlledRound.id);
-                    }}
-                    disabled={!isWaiting}
-                    className={`w-full p-4 rounded-xl flex items-center gap-3 transition-all ${isWaiting
-                        ? 'bg-gradient-to-r from-primary to-accent-purple text-white shadow-lg active:scale-[0.98]'
-                        : isActive || isLocked || isRevealed
-                            ? 'bg-success/10 text-success border border-success/30'
-                            : 'bg-background-elevated text-text-muted border border-white/5'
-                        }`}
-                >
-                    <div className="flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center">
-                        {(isActive || isLocked || isRevealed) ? (
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            </svg>
-                        ) : isWaiting ? (
-                            <div className="w-3 h-3 rounded-full bg-white"></div>
-                        ) : null}
-                    </div>
-                    <div className="flex-1 text-left">
-                        <div className="font-semibold">Запустить раунд</div>
-                        <div className={`text-xs ${isWaiting ? 'text-white/80' : 'text-text-muted'}`}>
-                            Начать прием ответов от игроков
-                        </div>
-                    </div>
-                </button>
-
-                {/* Action 2: Lock Round */}
-                <button
-                    onClick={() => {
-                        if (navigator.vibrate) navigator.vibrate(50);
-                        handleLockRound(controlledRound.id);
-                    }}
-                    disabled={!isActive}
-                    className={`w-full p-4 rounded-xl flex items-center gap-3 transition-all ${isActive
-                        ? 'bg-warning text-black shadow-lg active:scale-[0.98] animate-pulse-slow'
-                        : isLocked || isRevealed
-                            ? 'bg-success/10 text-success border border-success/30'
-                            : 'bg-background-elevated text-text-muted border border-white/5'
-                        }`}
-                >
-                    <div className="flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center">
-                        {(isLocked || isRevealed) ? (
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            </svg>
-                        ) : isActive ? (
-                            <div className="w-3 h-3 rounded-full bg-black"></div>
-                        ) : null}
-                    </div>
-                    <div className="flex-1 text-left">
-                        <div className="font-semibold">Закрыть ввод ответов</div>
-                        <div className={`text-xs ${isActive ? 'text-black/70' : 'text-text-muted'}`}>
-                            Остановить прием новых ответов
-                        </div>
-                    </div>
-                </button>
-
-                {/* Action 3: Reveal Answers */}
-                <button
-                    onClick={() => {
-                        if (navigator.vibrate) navigator.vibrate(50);
-                        handleRevealAnswers(controlledRound.id);
-                    }}
-                    disabled={!isLocked}
-                    className={`w-full p-4 rounded-xl flex items-center gap-3 transition-all ${isLocked
-                        ? 'bg-gradient-to-r from-accent-pink to-accent-orange text-white shadow-lg active:scale-[0.98]'
-                        : isRevealed
-                            ? 'bg-success/10 text-success border border-success/30'
-                            : 'bg-background-elevated text-text-muted border border-white/5'
-                        }`}
-                >
-                    <div className="flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center">
-                        {isRevealed ? (
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            </svg>
-                        ) : isLocked ? (
-                            <div className="w-3 h-3 rounded-full bg-white"></div>
-                        ) : null}
-                    </div>
-                    <div className="flex-1 text-left">
-                        <div className="font-semibold">Показать правильные ответы</div>
-                        <div className={`text-xs ${isLocked ? 'text-white/80' : 'text-text-muted'}`}>
-                            Открыть ответы на экране
-                        </div>
-                    </div>
-                </button>
-
-                {/* Action 4: Next Round */}
-                {isRevealed && !isLastRound && (
+        // Main control button based on state
+        let buttonContent;
+        switch (controlledRound.state) {
+            case 'WAITING':
+                buttonContent = (
+                    <button
+                        onClick={() => {
+                            if (navigator.vibrate) navigator.vibrate(50);
+                            handleStartRound(controlledRound.id);
+                        }}
+                        className="w-full h-32 rounded-xl bg-gradient-to-br from-primary to-accent-purple text-white text-2xl font-bold p-4 shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex flex-col items-center justify-center gap-2"
+                    >
+                        <span>СТАРТ</span>
+                        <span className="text-sm font-normal opacity-90">Запустить раунд</span>
+                    </button>
+                );
+                break;
+            case 'ACTIVE':
+                buttonContent = (
+                    <button
+                        onClick={() => {
+                            if (navigator.vibrate) navigator.vibrate(50);
+                            handleLockRound(controlledRound.id);
+                        }}
+                        className="w-full h-32 rounded-xl bg-warning text-black text-2xl font-bold p-4 shadow-lg hover:bg-warning/90 active:scale-95 transition-all flex flex-col items-center justify-center gap-2 animate-pulse-slow"
+                    >
+                        <span>СТОП</span>
+                        <span className="text-sm font-normal opacity-80">Закрыть ввод</span>
+                    </button>
+                );
+                break;
+            case 'LOCKED':
+                buttonContent = (
+                    <button
+                        onClick={() => {
+                            if (navigator.vibrate) navigator.vibrate(50);
+                            handleRevealAnswers(controlledRound.id);
+                        }}
+                        className="w-full h-32 rounded-xl bg-gradient-to-r from-accent-pink to-accent-orange text-white text-2xl font-bold p-4 shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex flex-col items-center justify-center gap-2"
+                    >
+                        <span>ПОКАЗАТЬ</span>
+                        <span className="text-sm font-normal opacity-90">Показать ответы</span>
+                    </button>
+                );
+                break;
+            case 'REVEALED':
+                buttonContent = !isLastRound ? (
                     <button
                         onClick={() => {
                             if (navigator.vibrate) navigator.vibrate(50);
                             setSelectedRoundIndex(selectedRoundIndex + 1);
                         }}
-                        className="w-full p-4 rounded-xl flex items-center gap-3 bg-primary/10 text-primary border-2 border-dashed border-primary active:scale-[0.98] transition-all"
+                        className="w-full h-32 rounded-xl border-2 border-dashed border-primary text-primary text-xl font-bold p-4 hover:bg-primary/10 active:scale-95 transition-all flex flex-col items-center justify-center gap-2"
                     >
-                        <div className="flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center">
-                            <div className="w-3 h-3 rounded-full bg-primary"></div>
-                        </div>
-                        <div className="flex-1 text-left">
-                            <div className="font-semibold">Перейти к следующему раунду</div>
-                            <div className="text-xs text-primary/70">
-                                Раунд {selectedRoundIndex + 2} из {rounds.length}
-                            </div>
-                        </div>
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
+                        <span>ДАЛЕЕ</span>
+                        <span className="text-sm font-normal opacity-80">Следующий раунд</span>
                     </button>
-                )}
-            </div>
-        );
+                ) : (
+                    <div className="text-center p-6 bg-success/10 border-2 border-success/30 rounded-xl">
+                        <div className="text-2xl mb-1">✅</div>
+                        <div className="font-bold text-success">Раунд завершен</div>
+                        <div className="text-xs text-text-muted mt-1">Это был последний раунд</div>
+                    </div>
+                );
+                break;
+            default:
+                buttonContent = null;
+        }
+
+        return buttonContent;
     };
 
 
