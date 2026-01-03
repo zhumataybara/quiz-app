@@ -38,7 +38,7 @@ export function QuestionInput({ onSubmit, disabled, submitted, restoredAnswer }:
     // If we have a restored answer but no local selectedMovie, create a pseudo-movie for display
     const displayMovie = selectedMovie || (submitted && restoredAnswer ? {
         id: restoredAnswer.tmdbId || 0,
-        title: restoredAnswer.text || 'Ответ отправлен',
+        title: restoredAnswer.metadata?.originalTitle || restoredAnswer.text || '',
         originalTitle: restoredAnswer.metadata?.originalTitle || restoredAnswer.text || '',
         year: restoredAnswer.metadata?.year || null,
         posterPath: restoredAnswer.metadata?.posterPath || null,
@@ -170,8 +170,9 @@ export function QuestionInput({ onSubmit, disabled, submitted, restoredAnswer }:
                         <div>
                             <div className="font-semibold text-text-primary">{displayMovie.title}</div>
                             <div className="text-sm text-text-muted">
-                                {displayMovie.year || 'Ответ принят'}
-                                {displayMovie.mediaType && `, ${displayMovie.mediaType === 'tv' ? 'Сериал' : 'Фильм'}`}
+                                {displayMovie.year ? `${displayMovie.year}` : ''}
+                                {displayMovie.year && displayMovie.mediaType ? ', ' : ''}
+                                {displayMovie.mediaType ? `${displayMovie.mediaType === 'tv' ? 'Сериал' : 'Фильм'}` : ''}
                             </div>
                         </div>
                     </div>
