@@ -412,16 +412,6 @@ export function setupSocketHandlers(io) {
                     });
                 }
 
-                // If this is the last round, mark game as FINISHED
-                const isLastRound = roundNumber === allRounds.length;
-                if (isLastRound) {
-                    await prisma.game.update({
-                        where: { id: round.gameId },
-                        data: { status: 'FINISHED' }
-                    });
-                    console.log(`🏁 Game ${round.gameId} marked as FINISHED`);
-                }
-
                 console.log(`🎯 Answers revealed for round ${roundId} (Round ${roundNumber}/${allRounds.length})`);
             } catch (error) {
                 console.error('admin:reveal_answers error:', error.message);
