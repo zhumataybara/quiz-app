@@ -38,26 +38,23 @@ export function GameControl() {
 
         // Socket.io listeners
         socket.on('round_started', ({ roundId }) => {
-            console.log('Round started:', roundId);
-            addHistoryEvent('round_start', `Раунд начат`);
+            socket.emit('start_round', { gameId, roundId });
             // No need to reload, game_state will follow
         });
 
         socket.on('round_locked', ({ roundId }) => {
-            console.log('Round locked:', roundId);
-            addHistoryEvent('round_lock', `Ввод ответов закрыт`);
+            socket.emit('lock_round', { gameId, roundId });
             loadGameData(); // Reload to update button state
         });
 
         socket.on('answers_revealed', ({ roundId }) => {
-            console.log('Answers revealed:', roundId);
-            addHistoryEvent('answers_reveal', `Ответы показаны`);
+            socket.emit('reveal_answers', { gameId, roundId });
             loadGameData();
         });
 
         socket.on('player_joined', ({ player }) => {
             setPlayers(prev => [...prev, player]);
-            addHistoryEvent('player_join', `Игрок "${player.nickname}" присоединился`);
+            // Player joined
         });
 
         return () => {
@@ -138,17 +135,9 @@ export function GameControl() {
     const handleResetGame = () => {
         socket.emit('admin:reset_game', { gameId });
         setShowResetModal(false);
-        addHistoryEvent('reset', 'Игра сброшена');
     };
 
-    // Helper: Add event to history
-    const addHistoryEvent = (type: string, message: string) => {
-        setActionHistory(prev => [...prev, {
-            timestamp: new Date(),
-            type,
-            message
-        }].slice(-50)); // Keep last 50 events
-    };
+
 
     // Helper: Copy join link to clipboard
     const handleCopyLink = async () => {
