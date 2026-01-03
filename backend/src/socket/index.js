@@ -69,9 +69,7 @@ export function setupSocketHandlers(io) {
                     where: { id: playerId },
                     include: {
                         game: true,
-                        answers: {
-                            select: { questionId: true }
-                        }
+                        answers: true // Select all fields including metadata
                     }
                 });
 
@@ -96,11 +94,17 @@ export function setupSocketHandlers(io) {
                 // Send current game state
                 const gameState = await getPublicGameState(gameId);
 
-                // Send ALL answered questions with details (frontend will filter by current round)
+                // Send ALL answered questions with FULL metadata (frontend will filter by current round)
                 const answeredQuestions = player.answers.map(a => ({
                     questionId: a.questionId,
                     tmdbId: a.tmdbId,
-                    text: a.submittedText
+                    text: a.submittedText,
+                    metadata: {
+                        posterPath: a.posterPath,
+                        originalTitle: a.originalTitle,
+                        year: a.year,
+                        mediaType: a.tmdbType
+                    }
                 }));
 
                 socket.emit('game_state', {
