@@ -373,7 +373,7 @@ export function GameControl() {
                         </div>
                         <button
                             onClick={handleCopyLink}
-                            className={`px-3 py-2 rounded-lg border transition-all text-xs font-semibold flex items-center gap-1.5 ${linkCopied
+                            className={`px-2 py-2 rounded-lg border transition-all text-xs font-semibold flex items-center gap-1.5 ${linkCopied
                                 ? 'bg-success/20 text-success border-success/50'
                                 : 'bg-primary/10 text-primary border-primary/50 active:bg-primary/20'}`}
                         >
@@ -382,14 +382,14 @@ export function GameControl() {
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                                     </svg>
-                                    <span className="hidden xs:inline">Скопировано</span>
+                                    <span className="hidden sm:inline">Скопировано</span>
                                 </>
                             ) : (
                                 <>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
                                     </svg>
-                                    <span className="hidden xs:inline">Ссылка</span>
+                                    <span className="hidden sm:inline">Ссылка</span>
                                 </>
                             )}
                         </button>
