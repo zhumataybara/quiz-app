@@ -518,7 +518,6 @@ export function GameControl() {
                                     )}
                                 </div>
                             )}
-                            )}
 
                             {/* Current Question Hint */}
                             {controlledRound?.state !== 'WAITING' && (
