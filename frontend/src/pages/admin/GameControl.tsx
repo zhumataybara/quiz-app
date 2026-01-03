@@ -518,62 +518,6 @@ export function GameControl() {
                                     )}
                                 </div>
                             )}
-
-                            {/* Round Statistics - Real-time */}
-                            {controlledRound?.state === 'ACTIVE' && players.length > 0 && (
-                                <div className="bg-background-elevated rounded-xl p-4 border border-white/5">
-                                    <div className="text-xs font-bold text-text-muted uppercase tracking-wider mb-3">
-                                        Статистика раунда
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <div className="flex-1">
-                                            <div className="text-xs text-text-secondary mb-1">Ответили</div>
-                                            <div className="text-2xl font-bold text-primary">
-                                                {players.filter(p => p.hasAnswered).length} / {players.length}
-                                            </div>
-                                        </div>
-                                        <div className="flex-1">
-                                            <div className="h-2 bg-background-hover rounded-full overflow-hidden">
-                                                <div
-                                                    className="h-full bg-gradient-to-r from-primary to-accent-teal transition-all duration-500"
-                                                    style={{ width: `${(players.filter(p => p.hasAnswered).length / players.length) * 100}%` }}
-                                                />
-                                            </div>
-                                            <div className="text-xs text-text-muted mt-1 text-right">
-                                                {Math.round((players.filter(p => p.hasAnswered).length / players.length) * 100)}%
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Action History */}
-                            {actionHistory.length > 0 && (
-                                <div className="bg-background-elevated rounded-xl p-3 border border-white/5">
-                                    <div
-                                        onClick={() => setShowHistory(!showHistory)}
-                                        className="flex justify-between items-center px-1 cursor-pointer"
-                                    >
-                                        <div className="text-xs font-bold text-text-muted uppercase tracking-wider">
-                                            История действий ({actionHistory.length})
-                                        </div>
-                                        <button className="text-xs text-primary hover:text-white transition-colors">
-                                            {showHistory ? 'Скрыть' : 'Показать'}
-                                        </button>
-                                    </div>
-                                    {showHistory && (
-                                        <div className="space-y-1 mt-2 max-h-48 overflow-y-auto">
-                                            {actionHistory.slice().reverse().map((event, i) => (
-                                                <div key={i} className="flex gap-2 items-start p-2 rounded bg-background-hover/50 text-xs">
-                                                    <span className="text-text-muted font-mono">
-                                                        {event.timestamp.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
-                                                    </span>
-                                                    <span className="text-text-secondary flex-1">{event.message}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
                             )}
 
                             {/* Current Question Hint */}
