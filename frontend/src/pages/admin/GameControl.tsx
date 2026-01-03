@@ -282,8 +282,8 @@ export function GameControl() {
                         }}
                         disabled={isLastRound}
                         className={`w-full h-48 rounded-2xl border-4 border-dashed text-xl font-bold p-6 flex flex-col items-center justify-center gap-4 ${isLastRound
-                                ? 'border-text-muted/30 text-text-muted/50 cursor-not-allowed'
-                                : 'border-primary text-primary hover:bg-primary/10 active:scale-95 transition-all'
+                            ? 'border-text-muted/30 text-text-muted/50 cursor-not-allowed'
+                            : 'border-primary text-primary hover:bg-primary/10 active:scale-95 transition-all'
                             }`}
                     >
                         <span>ДАЛЕЕ</span>
@@ -391,30 +391,31 @@ export function GameControl() {
                     </div>
                     <div className="flex gap-2">
                         <button
-                            onClick={() => setShowResetModal(true)}
-                            className="bg-background-hover text-text-muted p-2 rounded-lg border border-white/10 active:bg-white/10 active:text-white transition-colors"
-                            title="Сбросить игру"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
-                            </svg>
-                        </button>
-                        <button
                             onClick={() => window.open(`/screen/${game.roomCode}`, '_blank')}
-                            className="bg-accent-purple/20 text-accent-purple p-2 rounded-lg border border-accent-purple/50 active:bg-accent-purple active:text-white transition-colors"
-                            title="QR-код и лидерборд"
+                            className="bg-accent-purple text-white font-semibold px-3 py-2 rounded-lg text-xs active:scale-95 transition-all flex items-center gap-1.5"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 20.25h12m-7.5-3v3m3-3v3m-10.125-3h17.25c.621 0 1.125-.504 1.125-1.125V4.875c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v11.125c0 .621.504 1.125 1.125 1.125Z" />
                             </svg>
+                            <span className="hidden xs:inline">QR-код</span>
+                        </button>
+                        <button
+                            onClick={() => setShowResetModal(true)}
+                            className="bg-background-hover text-text-muted px-3 py-2 rounded-lg border border-white/10 active:bg-white/10 active:text-white transition-colors text-xs font-semibold flex items-center gap-1.5"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                            </svg>
+                            <span className="hidden xs:inline">Сбросить</span>
                         </button>
                         <button
                             onClick={() => navigate('/admin')}
-                            className="bg-background-hover p-2 rounded-lg text-text-muted active:text-white border border-white/10"
+                            className="bg-background-hover px-3 py-2 rounded-lg text-text-muted active:text-white border border-white/10 text-xs font-semibold flex items-center gap-1"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
                             </svg>
+                            <span className="hidden xs:inline">Назад</span>
                         </button>
                     </div>
                 </div>
