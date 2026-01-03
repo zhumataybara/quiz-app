@@ -44,25 +44,45 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'Movie Quiz API is running' });
 });
 
+// Store migration logs in memory
+let migrationLogs = {
+    status: 'idle', // idle, running, success, error
+    output: '',
+    timestamp: null
+};
+
 // Emergency Migration Endpoint
 app.get('/api/migrate-db', (req, res) => {
     // Respond immediately to prevent browser timeout/hanging
     res.json({
         success: true,
-        message: 'Migration process triggered in background. Please wait 15-30 seconds, then refresh the game page.'
+        message: 'Migration process triggered in background. Check /api/migrate-status for results.'
     });
 
     console.log('🔄 Triggering manual database migration (background)...');
+    migrationLogs = { status: 'running', output: 'Starting migration...\n', timestamp: new Date() };
+
     exec('npx prisma db push --accept-data-loss --skip-generate', (error, stdout, stderr) => {
         if (error) {
             console.error(`Migration error: ${error.message}`);
+            migrationLogs.status = 'error';
+            migrationLogs.output += `ERROR: ${error.message}\n`;
+            if (stderr) migrationLogs.output += `STDERR: ${stderr}\n`;
             return;
         }
         if (stderr) {
             console.log(`Migration stderr: ${stderr}`);
+            migrationLogs.output += `STDERR: ${stderr}\n`;
         }
         console.log(`Migration stdout: ${stdout}`);
+        migrationLogs.status = 'success';
+        migrationLogs.output += `STDOUT: ${stdout}\n`;
     });
+});
+
+// Check migration status
+app.get('/api/migrate-status', (req, res) => {
+    res.json(migrationLogs);
 });
 
 // Setup Socket.io handlers
