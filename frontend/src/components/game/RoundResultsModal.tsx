@@ -83,20 +83,25 @@ export function RoundResultsModal({
                                     initial={{ opacity: 0, x: -10 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: index * 0.05 }}
-                                    className={`rounded-xl border p-3 ${q.isCorrect
-                                            ? 'bg-success/5 border-success/20'
-                                            : 'bg-error/5 border-error/20'
+                                    className={`rounded-lg border p-2.5 ${q.isCorrect
+                                        ? 'bg-success/5 border-success/20'
+                                        : 'bg-error/5 border-error/20'
                                         }`}
                                 >
-                                    <div className="flex gap-2">
+                                    <div className="flex items-start gap-2">
+                                        {/* Number */}
+                                        <div className="flex-shrink-0 w-5 h-5 rounded-full bg-background-hover flex items-center justify-center">
+                                            <span className="text-xs font-bold text-text-muted">{index + 1}</span>
+                                        </div>
+
                                         {/* Icon */}
-                                        <div className="flex-shrink-0 mt-0.5">
+                                        <div className="flex-shrink-0">
                                             {q.isCorrect ? (
-                                                <svg className="w-5 h-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg className="w-4 h-4 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                                                 </svg>
                                             ) : (
-                                                <svg className="w-5 h-5 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg className="w-4 h-4 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
                                                 </svg>
                                             )}
@@ -104,40 +109,38 @@ export function RoundResultsModal({
 
                                         <div className="flex-1 min-w-0">
                                             {/* Question */}
-                                            <div className="text-sm font-medium text-text-primary mb-1.5">
+                                            <div className="text-xs font-medium text-text-primary mb-1">
                                                 {q.questionTitle}
                                             </div>
 
                                             {/* Answer */}
                                             {q.yourAnswer ? (
-                                                <div className="text-xs mb-1">
-                                                    <span className="text-text-muted">Ваш ответ: </span>
+                                                <div className="text-xs">
                                                     <span className={`font-medium ${q.isCorrect ? 'text-success' : 'text-error'}`}>
                                                         {q.yourAnswer}
                                                     </span>
                                                 </div>
                                             ) : (
-                                                <div className="text-xs text-text-muted mb-1">Не отвечено</div>
+                                                <div className="text-xs text-text-muted">Не отвечено</div>
                                             )}
 
                                             {/* Correct Answer (if wrong) */}
                                             {!q.isCorrect && (
-                                                <div className="text-xs">
-                                                    <span className="text-text-muted">Правильно: </span>
+                                                <div className="text-xs mt-0.5">
                                                     <span className="text-success font-medium">{q.correctAnswer}</span>
                                                 </div>
                                             )}
+                                        </div>
 
-                                            {/* Points Badge */}
-                                            <div className="mt-1.5">
-                                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-semibold ${q.isCorrect
-                                                        ? 'bg-success/10 text-success'
-                                                        : 'bg-error/10 text-error'
-                                                    }`}>
-                                                    {q.isCorrect && '+'}
-                                                    {q.points}/{q.maxPoints}
-                                                </span>
-                                            </div>
+                                        {/* Points Badge - Right Aligned */}
+                                        <div className="flex-shrink-0">
+                                            <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-xs font-bold ${q.isCorrect
+                                                ? 'bg-success/10 text-success'
+                                                : 'bg-error/10 text-error'
+                                                }`}>
+                                                {q.isCorrect && '+'}
+                                                {q.points}/{q.maxPoints}
+                                            </span>
                                         </div>
                                     </div>
                                 </motion.div>
