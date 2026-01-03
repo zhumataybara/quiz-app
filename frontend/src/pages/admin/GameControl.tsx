@@ -23,12 +23,6 @@ export function GameControl() {
 
     // New features state
     const [linkCopied, setLinkCopied] = useState(false);
-    const [actionHistory, setActionHistory] = useState<Array<{
-        timestamp: Date;
-        type: string;
-        message: string;
-    }>>([]);
-    const [showHistory, setShowHistory] = useState(false);
 
     // Load game data from API
     useEffect(() => {
