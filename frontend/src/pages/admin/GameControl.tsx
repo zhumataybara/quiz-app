@@ -306,10 +306,10 @@ export function GameControl() {
                             round.state === 'LOCKED' ? 'bg-warning text-black' :
                                 'bg-black/20'
                             }`}>
-                            {round.state === 'WAITING' && 'Ожидание'}
-                            {round.state === 'ACTIVE' && 'Активен'}
+                            {round.state === 'WAITING' && 'Ожидает'}
+                            {round.state === 'ACTIVE' && 'Идет'}
                             {round.state === 'LOCKED' && 'Закрыт'}
-                            {round.state === 'REVEALED' && 'Раскрыто'}
+                            {round.state === 'REVEALED' && 'Завершен'}
                             {!['WAITING', 'ACTIVE', 'LOCKED', 'REVEALED'].includes(round.state) && round.state}
                         </div>
                     </div>
@@ -445,10 +445,10 @@ export function GameControl() {
                                             controlledRound?.state === 'REVEALED' ? 'bg-info/20 text-info' :
                                                 'bg-text-muted/20 text-text-muted'
                                         }`}>
-                                        {controlledRound?.state === 'WAITING' && 'Ожидание'}
-                                        {controlledRound?.state === 'ACTIVE' && 'Активен'}
+                                        {controlledRound?.state === 'WAITING' && 'Ожидает'}
+                                        {controlledRound?.state === 'ACTIVE' && 'Идет'}
                                         {controlledRound?.state === 'LOCKED' && 'Закрыт'}
-                                        {controlledRound?.state === 'REVEALED' && 'Раскрыто'}
+                                        {controlledRound?.state === 'REVEALED' && 'Завершен'}
                                     </span>
                                 </div>
                             </div>
@@ -665,10 +665,10 @@ export function GameControl() {
                                                     round.state === 'REVEALED' ? 'bg-info/20 text-info' :
                                                         'bg-text-muted/20 text-text-muted'
                                                 }`}>
-                                                {round.state === 'WAITING' && 'Ожидание'}
-                                                {round.state === 'ACTIVE' && 'Активен'}
+                                                {round.state === 'WAITING' && 'Ожидает'}
+                                                {round.state === 'ACTIVE' && 'Идет'}
                                                 {round.state === 'LOCKED' && 'Закрыт'}
-                                                {round.state === 'REVEALED' && 'Раскрыто'}
+                                                {round.state === 'REVEALED' && 'Завершен'}
                                                 {!['WAITING', 'ACTIVE', 'LOCKED', 'REVEALED'].includes(round.state) && round.state}
                                             </span>
                                         </div>
@@ -700,10 +700,10 @@ export function GameControl() {
                                             controlledRound.state === 'REVEALED' ? 'bg-info/20 text-info border border-info/30' :
                                                 'bg-black/20 text-text-muted'
                                         }`}>
-                                        {controlledRound.state === 'WAITING' && 'Ожидание'}
+                                        {controlledRound.state === 'WAITING' && 'Ожидает'}
                                         {controlledRound.state === 'ACTIVE' && 'Ввод активен'}
                                         {controlledRound.state === 'LOCKED' && 'Ввод закрыт'}
-                                        {controlledRound.state === 'REVEALED' && 'Раскрыто'}
+                                        {controlledRound.state === 'REVEALED' && 'Завершен'}
                                     </div>
                                 </div>
 

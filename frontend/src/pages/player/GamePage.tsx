@@ -221,10 +221,10 @@ export function GamePage() {
                                             : 'bg-text-muted/20 text-text-muted'
                                     }`}
                             >
-                                {roundState === 'ACTIVE' && 'Активен'}
+                                {roundState === 'ACTIVE' && 'Идет'}
                                 {roundState === 'LOCKED' && 'Ввод закрыт'}
-                                {roundState === 'REVEALED' && 'Раскрыто'}
-                                {roundState === 'WAITING' && 'Ожидание'}
+                                {roundState === 'REVEALED' && 'Завершен'}
+                                {roundState === 'WAITING' && 'Ожидает'}
                             </div>
                         </div>
                     </div>
