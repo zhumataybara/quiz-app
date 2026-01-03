@@ -242,15 +242,31 @@ export function GameControl() {
                 break;
             case 'LOCKED':
                 buttonContent = (
-                    <button
-                        onClick={() => {
-                            if (navigator.vibrate) navigator.vibrate(50);
-                            handleRevealAnswers(controlledRound.id);
-                        }}
-                        className="w-full h-32 rounded-xl bg-gradient-to-r from-accent-pink to-accent-orange text-white text-2xl font-bold p-4 shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center"
-                    >
-                        <span>ПОКАЗАТЬ</span>
-                    </button>
+                    <div className="flex gap-2">
+                        {/* Show Answers Button - Left */}
+                        <button
+                            onClick={() => {
+                                if (navigator.vibrate) navigator.vibrate(50);
+                                handleRevealAnswers(controlledRound.id);
+                            }}
+                            className="flex-1 h-28 rounded-xl bg-gradient-to-r from-accent-pink to-accent-orange text-white text-lg font-bold p-3 shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center"
+                        >
+                            <span>ПОКАЗАТЬ</span>
+                        </button>
+
+                        {/* Next Round Button - Right */}
+                        {!isLastRound && (
+                            <button
+                                onClick={() => {
+                                    if (navigator.vibrate) navigator.vibrate(50);
+                                    setSelectedRoundIndex(selectedRoundIndex + 1);
+                                }}
+                                className="flex-1 h-28 rounded-xl border-2 border-dashed border-primary text-primary text-lg font-bold p-3 hover:bg-primary/10 active:scale-95 transition-all flex items-center justify-center"
+                            >
+                                <span>ДАЛЕЕ</span>
+                            </button>
+                        )}
+                    </div>
                 );
                 break;
             case 'REVEALED':
