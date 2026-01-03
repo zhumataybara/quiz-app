@@ -45,83 +45,97 @@ export function RoundResultsModal({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 overflow-y-auto"
+                    className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/90 backdrop-blur-sm"
                 >
                     <motion.div
-                        initial={{ scale: 0.9, y: 20, opacity: 0 }}
-                        animate={{ scale: 1, y: 0, opacity: 1 }}
-                        exit={{ scale: 0.9, y: 20, opacity: 0 }}
-                        className="bg-gradient-to-br from-background-elevated to-background-hover border-2 border-primary/30 rounded-3xl p-6 max-w-2xl w-full shadow-2xl my-8"
+                        initial={{ y: '100%', opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: '100%', opacity: 0 }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                        className="bg-gradient-to-br from-background-elevated to-background-hover border-t-2 sm:border-2 border-primary/30 rounded-t-3xl sm:rounded-3xl w-full sm:max-w-lg max-h-[90vh] sm:max-h-[85vh] overflow-hidden shadow-2xl"
                     >
-                        {/* Header */}
-                        <div className="text-center mb-6">
-                            <div className="inline-block bg-gradient-to-r from-primary to-accent-purple text-white px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider mb-3">
-                                Раунд {roundNumber}
+                        {/* Compact Header */}
+                        <div className="bg-gradient-to-r from-primary/10 to-accent-purple/10 border-b border-white/5 px-4 py-3">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent-purple flex items-center justify-center text-white text-sm font-bold">
+                                        {roundNumber}
+                                    </div>
+                                    <div>
+                                        <div className="text-xs text-text-muted uppercase tracking-wide">Результаты</div>
+                                        <div className="text-sm font-semibold text-text-primary truncate max-w-[200px]">{roundTitle}</div>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <div className="text-xs text-text-muted">Очки</div>
+                                    <div className={`text-lg font-bold ${isPerfect ? 'text-accent-orange' : 'text-primary'}`}>
+                                        {totalEarned}/{totalPossible}
+                                    </div>
+                                </div>
                             </div>
-                            <h1 className="text-3xl font-bold text-text-primary mb-2">
-                                🎯 Результаты раунда
-                            </h1>
-                            <h2 className="text-xl text-accent-orange font-semibold">
-                                {roundTitle}
-                            </h2>
                         </div>
 
-                        {/* Questions List */}
-                        <div className="space-y-3 mb-6 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+                        {/* Scrollable Questions */}
+                        <div className="overflow-y-auto max-h-[calc(90vh-240px)] sm:max-h-[calc(85vh-220px)] px-4 py-3 space-y-2">
                             {questions.map((q, index) => (
                                 <motion.div
                                     key={index}
-                                    initial={{ opacity: 0, x: -20 }}
+                                    initial={{ opacity: 0, x: -10 }}
                                     animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: index * 0.1 }}
-                                    className={`p-4 rounded-xl border ${q.isCorrect
-                                            ? 'bg-success/10 border-success/30'
-                                            : 'bg-error/10 border-error/30'
+                                    transition={{ delay: index * 0.05 }}
+                                    className={`rounded-xl border p-3 ${q.isCorrect
+                                            ? 'bg-success/5 border-success/20'
+                                            : 'bg-error/5 border-error/20'
                                         }`}
                                 >
-                                    <div className="flex items-start gap-3">
+                                    <div className="flex gap-2">
                                         {/* Icon */}
-                                        <div className={`text-2xl flex-shrink-0 ${q.isCorrect ? 'animate-bounce' : ''
-                                            }`}>
-                                            {q.isCorrect ? '✅' : '❌'}
+                                        <div className="flex-shrink-0 mt-0.5">
+                                            {q.isCorrect ? (
+                                                <svg className="w-5 h-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            ) : (
+                                                <svg className="w-5 h-5 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            )}
                                         </div>
 
                                         <div className="flex-1 min-w-0">
-                                            {/* Question Title */}
-                                            <div className="font-bold text-text-primary mb-2">
-                                                Вопрос {index + 1}: {q.questionTitle}
+                                            {/* Question */}
+                                            <div className="text-sm font-medium text-text-primary mb-1.5">
+                                                {q.questionTitle}
                                             </div>
 
-                                            {/* Your Answer */}
+                                            {/* Answer */}
                                             {q.yourAnswer ? (
-                                                <div className="text-sm mb-1">
-                                                    <span className={q.isCorrect ? 'text-success' : 'text-error'}>
-                                                        Ваш ответ:
-                                                    </span>{' '}
-                                                    <span className="text-text-secondary font-medium">
+                                                <div className="text-xs mb-1">
+                                                    <span className="text-text-muted">Ваш ответ: </span>
+                                                    <span className={`font-medium ${q.isCorrect ? 'text-success' : 'text-error'}`}>
                                                         {q.yourAnswer}
                                                     </span>
                                                 </div>
                                             ) : (
-                                                <div className="text-sm text-text-muted mb-1">
-                                                    Ответ не дан
-                                                </div>
+                                                <div className="text-xs text-text-muted mb-1">Не отвечено</div>
                                             )}
 
                                             {/* Correct Answer (if wrong) */}
                                             {!q.isCorrect && (
-                                                <div className="text-sm">
-                                                    <span className="text-success">Правильно:</span>{' '}
-                                                    <span className="text-text-primary font-medium">
-                                                        {q.correctAnswer}
-                                                    </span>
+                                                <div className="text-xs">
+                                                    <span className="text-text-muted">Правильно: </span>
+                                                    <span className="text-success font-medium">{q.correctAnswer}</span>
                                                 </div>
                                             )}
 
-                                            {/* Points */}
-                                            <div className="text-sm mt-2">
-                                                <span className={q.isCorrect ? 'text-success font-bold' : 'text-error'}>
-                                                    {q.isCorrect ? '+' : ''}{q.points} / {q.maxPoints} очков
+                                            {/* Points Badge */}
+                                            <div className="mt-1.5">
+                                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-semibold ${q.isCorrect
+                                                        ? 'bg-success/10 text-success'
+                                                        : 'bg-error/10 text-error'
+                                                    }`}>
+                                                    {q.isCorrect && '+'}
+                                                    {q.points}/{q.maxPoints}
                                                 </span>
                                             </div>
                                         </div>
@@ -130,69 +144,55 @@ export function RoundResultsModal({
                             ))}
                         </div>
 
-                        {/* Summary Stats */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: questions.length * 0.1 + 0.2 }}
-                            className="bg-background-elevated/50 rounded-2xl p-6 border border-white/5 mb-6"
-                        >
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                                {/* Earned Points */}
-                                <div>
-                                    <div className="text-text-muted text-sm mb-1">Заработано</div>
-                                    <div className={`text-3xl font-bold ${isPerfect ? 'text-accent-orange animate-pulse' : 'text-primary'
-                                        }`}>
-                                        {totalEarned} / {totalPossible}
-                                    </div>
-                                    {isPerfect && (
-                                        <div className="text-accent-orange text-sm mt-1 font-bold">
-                                            🎉 Идеально!
-                                        </div>
-                                    )}
-                                </div>
-
+                        {/* Compact Stats Footer */}
+                        <div className="border-t border-white/5 bg-background-elevated/50 px-4 py-3">
+                            <div className="grid grid-cols-2 gap-3 mb-3">
                                 {/* Rank */}
-                                <div>
-                                    <div className="text-text-muted text-sm mb-1">Ваше место</div>
-                                    <div className="flex items-center justify-center gap-2">
-                                        <span className="text-3xl font-bold text-accent-orange">
-                                            {currentRank}-е
+                                <div className="text-center">
+                                    <div className="text-xs text-text-muted mb-1">Место</div>
+                                    <div className="flex items-center justify-center gap-1.5">
+                                        <span className="text-2xl font-bold text-accent-orange">
+                                            {currentRank}
                                         </span>
                                         {rankChange !== 0 && (
-                                            <span className={`text-xl font-bold ${rankChange > 0 ? 'text-success' : 'text-error'
-                                                }`}>
-                                                {rankChange > 0 ? '↑' : '↓'}{Math.abs(rankChange)}
+                                            <span className="flex items-center">
+                                                {rankChange > 0 ? (
+                                                    <svg className="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                                    </svg>
+                                                ) : (
+                                                    <svg className="w-4 h-4 text-error" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                    </svg>
+                                                )}
+                                                <span className={`text-sm font-bold ${rankChange > 0 ? 'text-success' : 'text-error'}`}>
+                                                    {Math.abs(rankChange)}
+                                                </span>
                                             </span>
                                         )}
                                     </div>
-                                    <div className="text-text-muted text-xs mt-1">
-                                        из {totalPlayers} игроков
-                                    </div>
+                                    <div className="text-xs text-text-muted mt-0.5">из {totalPlayers}</div>
                                 </div>
 
                                 {/* Total Score */}
-                                <div>
-                                    <div className="text-text-muted text-sm mb-1">Всего очков</div>
-                                    <div className="text-3xl font-bold text-primary">
+                                <div className="text-center">
+                                    <div className="text-xs text-text-muted mb-1">Всего</div>
+                                    <div className="text-2xl font-bold text-primary">
                                         {totalScore}
                                     </div>
+                                    <div className="text-xs text-text-muted mt-0.5">очков</div>
                                 </div>
                             </div>
-                        </motion.div>
 
-                        {/* Continue Button */}
-                        <motion.button
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: questions.length * 0.1 + 0.4 }}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={onClose}
-                            className="w-full bg-gradient-to-r from-primary to-accent-purple text-white font-bold text-xl py-4 rounded-xl shadow-lg hover:shadow-xl transition-all"
-                        >
-                            ПРОДОЛЖИТЬ
-                        </motion.button>
+                            {/* Continue Button */}
+                            <motion.button
+                                whileTap={{ scale: 0.98 }}
+                                onClick={onClose}
+                                className="w-full bg-gradient-to-r from-primary to-accent-purple text-white font-bold text-base py-3 rounded-xl shadow-lg active:shadow-md transition-shadow"
+                            >
+                                ПРОДОЛЖИТЬ
+                            </motion.button>
+                        </div>
                     </motion.div>
                 </motion.div>
             )}
