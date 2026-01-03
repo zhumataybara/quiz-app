@@ -50,6 +50,12 @@ export function useSocket() {
                 setProgress(data.progress);
             }
 
+            // Save gameId to localStorage for reconnection
+            if (data.game && data.game.id) {
+                localStorage.setItem('quiz_game_id', data.game.id);
+                console.log('💾 Saved gameId to localStorage:', data.game.id);
+            }
+
             // Restore answered questions if provided (from reconnection)
             if (data.answeredQuestions && Array.isArray(data.answeredQuestions)) {
                 const { setAnsweredQuestions } = useGameStore.getState();
