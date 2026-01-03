@@ -15,6 +15,19 @@ export function useSocket() {
         const handleConnect = () => {
             console.log('Connected to server');
             setConnected(true);
+
+            // Auto-reconnect if we have saved player data
+            const savedPlayerId = localStorage.getItem('quiz_player_id');
+            const savedGameId = localStorage.getItem('quiz_game_id');
+
+            if (savedPlayerId && savedGameId) {
+                console.log('🔄 Auto-reconnecting with saved session:', { savedPlayerId, savedGameId });
+                socket.emit('reconnect_player', { playerId: savedPlayerId, gameId: savedGameId });
+
+                // Save playerId to store immediately (gameId will come from game_state response)
+                const { setPlayerId } = useGameStore.getState();
+                setPlayerId(savedPlayerId);
+            }
         };
 
         const handleDisconnect = () => {
