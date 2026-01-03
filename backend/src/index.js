@@ -47,7 +47,7 @@ app.get('/api/health', (req, res) => {
 // Emergency Migration Endpoint
 app.get('/api/migrate-db', (req, res) => {
     console.log('🔄 Triggering manual database migration...');
-    exec('npx prisma db push', (error, stdout, stderr) => {
+    exec('npx prisma db push --accept-data-loss', (error, stdout, stderr) => {
         if (error) {
             console.error(`Migration error: ${error.message}`);
             return res.status(500).json({
