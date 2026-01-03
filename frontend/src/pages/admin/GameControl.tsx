@@ -48,8 +48,8 @@ export function GameControl() {
         });
 
         socket.on('answers_revealed', ({ roundId }) => {
-            socket.emit('reveal_answers', { gameId, roundId });
-            loadGameData();
+            console.log('Answers revealed for round:', roundId);
+            loadGameData(); // Reload to show next round button
         });
 
         socket.on('player_joined', ({ player }) => {
@@ -247,10 +247,9 @@ export function GameControl() {
                             if (navigator.vibrate) navigator.vibrate(50);
                             handleRevealAnswers(controlledRound.id);
                         }}
-                        className="w-full h-32 rounded-xl bg-gradient-to-r from-accent-pink to-accent-orange text-white text-2xl font-bold p-4 shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex flex-col items-center justify-center gap-2"
+                        className="w-full h-32 rounded-xl bg-gradient-to-r from-accent-pink to-accent-orange text-white text-2xl font-bold p-4 shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center"
                     >
                         <span>ПОКАЗАТЬ</span>
-                        <span className="text-sm font-normal opacity-90">Показать ответы</span>
                     </button>
                 );
                 break;
@@ -455,28 +454,40 @@ export function GameControl() {
                             </div>
 
                             {/* Copy Link Button - Always Visible */}
-                            <button
-                                onClick={handleCopyLink}
-                                className={`w-full py-3 rounded-xl border-2 transition-all font-semibold text-sm flex items-center justify-center gap-2 ${linkCopied
-                                    ? 'bg-success/20 text-success border-success/50'
-                                    : 'bg-primary/10 text-primary border-primary/50 hover:bg-primary/20 active:scale-[0.98]'}`}
-                            >
-                                {linkCopied ? (
-                                    <>
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                        </svg>
-                                        <span>Ссылка скопирована!</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
-                                        </svg>
-                                        <span>Скопировать ссылку для игроков</span>
-                                    </>
-                                )}
-                            </button>
+                            {/* Copy Link and Reset Buttons */}
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={handleCopyLink}
+                                    className={`flex-1 py-2.5 rounded-lg border transition-all font-medium text-xs flex items-center justify-center gap-1.5 ${linkCopied
+                                        ? 'bg-success/20 text-success border-success/50'
+                                        : 'bg-primary/10 text-primary border-primary/50 hover:bg-primary/20 active:scale-[0.98]'}`}
+                                >
+                                    {linkCopied ? (
+                                        <>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                            </svg>
+                                            <span>Скопировано</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                                            </svg>
+                                            <span>Ссылка</span>
+                                        </>
+                                    )}
+                                </button>
+                                <button
+                                    onClick={() => setShowResetModal(true)}
+                                    className="flex-1 py-2.5 rounded-lg border border-error/50 bg-error/10 text-error hover:bg-error/20 active:scale-[0.98] transition-all font-medium text-xs flex items-center justify-center gap-1.5"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                    </svg>
+                                    <span>Сброс</span>
+                                </button>
+                            </div>
 
                             {/* Action List - Compact Controls */}
                             <div className="shrink-0">
@@ -510,12 +521,7 @@ export function GameControl() {
                                 </div>
                             )}
 
-                            {/* Current Question Hint */}
-                            {controlledRound?.state !== 'WAITING' && (
-                                <div className="text-center text-xs text-text-muted/60 py-4">
-                                    Отсканируйте QR на проекторе, чтобы подключиться
-                                </div>
-                            )}
+
                         </div>
                     )}
 
