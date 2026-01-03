@@ -46,26 +46,22 @@ app.get('/api/health', (req, res) => {
 
 // Emergency Migration Endpoint
 app.get('/api/migrate-db', (req, res) => {
-    console.log('🔄 Triggering manual database migration...');
-    exec('npx prisma db push --accept-data-loss', (error, stdout, stderr) => {
+    // Respond immediately to prevent browser timeout/hanging
+    res.json({
+        success: true,
+        message: 'Migration process triggered in background. Please wait 15-30 seconds, then refresh the game page.'
+    });
+
+    console.log('🔄 Triggering manual database migration (background)...');
+    exec('npx prisma db push --accept-data-loss --skip-generate', (error, stdout, stderr) => {
         if (error) {
             console.error(`Migration error: ${error.message}`);
-            return res.status(500).json({
-                success: false,
-                message: 'Migration Failed',
-                error: error.message,
-                stderr
-            });
+            return;
         }
         if (stderr) {
             console.log(`Migration stderr: ${stderr}`);
         }
         console.log(`Migration stdout: ${stdout}`);
-        res.json({
-            success: true,
-            message: 'Database migrated successfully!',
-            output: stdout
-        });
     });
 });
 
