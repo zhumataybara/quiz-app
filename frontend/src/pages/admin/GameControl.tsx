@@ -254,8 +254,8 @@ export function GameControl() {
                             <span>ПОКАЗАТЬ</span>
                         </button>
 
-                        {/* Next Round Button - Right */}
-                        {!isLastRound && (
+                        {/* Next Round Button OR Last Round Info - Right */}
+                        {!isLastRound ? (
                             <button
                                 onClick={() => {
                                     if (navigator.vibrate) navigator.vibrate(50);
@@ -265,6 +265,13 @@ export function GameControl() {
                             >
                                 <span>ДАЛЕЕ</span>
                             </button>
+                        ) : (
+                            <div className="flex-1 h-28 rounded-xl border-2 border-success/30 bg-success/10 text-success p-3 flex flex-col items-center justify-center">
+                                <svg className="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                                <span className="text-xs font-bold">Последний раунд</span>
+                            </div>
                         )}
                     </div>
                 );
