@@ -40,8 +40,8 @@ export async function searchMovies(query, language = 'ru-RU') {
 
         const results = response.data.results
             .filter(item => {
-                // Only keep movies and TV shows with sufficient votes
-                return (item.media_type === 'movie' || item.media_type === 'tv') && item.vote_count > 100;
+                // Only keep movies and TV shows with at least some votes (relaxed from 100 to 10)
+                return (item.media_type === 'movie' || item.media_type === 'tv') && item.vote_count > 10;
             })
             .map(item => {
                 const isMovie = item.media_type === 'movie';
