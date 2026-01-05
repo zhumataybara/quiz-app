@@ -22,6 +22,12 @@ export async function searchMovies(query, language = 'ru-RU') {
     }
 
     try {
+        // Check if API key is configured
+        if (!TMDB_API_KEY) {
+            console.error('TMDB_API_KEY is not configured! Set it in environment variables.');
+            return [];
+        }
+
         // Use multi search to get both movies and TV shows
         const response = await axios.get(`${TMDB_BASE_URL}/search/multi`, {
             params: {
@@ -60,9 +66,13 @@ export async function searchMovies(query, language = 'ru-RU') {
         // Save to cache for 24 hours
         await setCache(cacheKey, results, 86400);
 
+        console.log(`TMDB search for "${query}" returned ${results.length} results`);
         return results;
     } catch (error) {
         console.error('TMDB search error:', error.message);
+        if (error.response) {
+            console.error('TMDB API response:', error.response.status, error.response.data);
+        }
         return [];
     }
 }
