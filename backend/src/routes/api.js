@@ -30,9 +30,9 @@ router.post('/games', protect, createGame);
 router.put('/games/:id', protect, updateGame);
 router.delete('/games/:id', protect, deleteGame);
 
-// TMDB routes (Protected - specific for admin creation)
-router.get('/tmdb/search', protect, searchTMDB);
-router.get('/tmdb/movie/:id', protect, getTMDBMovieDetails);
+// TMDB routes (Public for easier testing - can add protect later if needed)
+router.get('/tmdb/search', searchTMDB);
+router.get('/tmdb/movie/:id', getTMDBMovieDetails);
 
 // Player routes (Public - players are not authenticated)
 router.get('/players/:id/answers', getPlayerAnswers);
