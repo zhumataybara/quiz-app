@@ -84,3 +84,6 @@ export const gameAPI = {
         return response.data;
     },
 };
+
+// Export axios instance as default for direct API calls
+export default api;
