@@ -6,6 +6,7 @@ import {
     createGame,
     updateGame,
     deleteGame,
+    searchTMDB,
     getTMDBMovieDetails,
     getPlayerAnswers
 } from '../controllers/gameController.js';
@@ -30,6 +31,7 @@ router.put('/games/:id', protect, updateGame);
 router.delete('/games/:id', protect, deleteGame);
 
 // TMDB routes (Protected - specific for admin creation)
+router.get('/tmdb/search', protect, searchTMDB);
 router.get('/tmdb/movie/:id', protect, getTMDBMovieDetails);
 
 // Player routes (Public - players are not authenticated)

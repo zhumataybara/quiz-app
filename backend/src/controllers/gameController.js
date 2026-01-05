@@ -282,6 +282,23 @@ export async function deleteGame(req, res) {
     }
 }
 
+// GET /api/tmdb/search?query=... - Поиск фильмов и сериалов в TMDB
+export async function searchTMDB(req, res) {
+    try {
+        const { query } = req.query;
+
+        if (!query || query.length < 2) {
+            return res.json([]);
+        }
+
+        const results = await tmdb.searchMovies(query);
+        res.json(results);
+    } catch (error) {
+        console.error('Error searching TMDB:', error);
+        res.status(500).json({ error: 'Failed to search TMDB' });
+    }
+}
+
 // GET /api/tmdb/movie/:id - Получить детали фильма из TMDB
 export async function getTMDBMovieDetails(req, res) {
     try {
