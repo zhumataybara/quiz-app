@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useSocket } from '../../hooks/useSocket';
 import { useGameStore } from '../../hooks/useGameStore';
+import { socket } from '../../services/socket';
 
 export function JoinGamePage() {
     const navigate = useNavigate();
@@ -13,23 +14,52 @@ export function JoinGamePage() {
     const [roomCode, setRoomCode] = useState(searchParams.get('code') || '');
     const [nickname, setNickname] = useState('');
     const [isJoining, setIsJoining] = useState(false);
+    const [error, setError] = useState('');
+
+    // Listen for successful join
+    useEffect(() => {
+        const handlePlayerJoined = () => {
+            console.log('✅ Player joined successfully, navigating to lobby');
+            navigate('/lobby');
+        };
+
+        const handleError = ({ message }: { message: string }) => {
+            console.error('❌ Join error:', message);
+            setError(message);
+            setIsJoining(false);
+        };
+
+        socket.on('player_joined', handlePlayerJoined);
+        socket.on('error', handleError);
+
+        return () => {
+            socket.off('player_joined', handlePlayerJoined);
+            socket.off('error', handleError);
+        };
+    }, [navigate]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!roomCode.trim() || !nickname.trim()) {
-            alert('Заполните все поля');
+            setError('Заполните все поля');
             return;
         }
 
+        setError('');
         setIsJoining(true);
         setPlayerNickname(nickname);
+        
+        // Join game - will navigate to lobby when player_joined event is received
         joinGame(roomCode.toUpperCase(), nickname);
 
-        // Navigate to lobby (socket will update game state)
+        // Safety timeout - if no response in 10 seconds, show error
         setTimeout(() => {
-            navigate('/lobby');
-        }, 500);
+            if (isJoining) {
+                setError('Не удалось подключиться к игре. Проверьте код комнаты.');
+                setIsJoining(false);
+            }
+        }, 10000);
     };
 
     return (
@@ -82,6 +112,13 @@ export function JoinGamePage() {
                         />
                     </div>
 
+                    {/* Error Message */}
+                    {error && (
+                        <div className="bg-error/10 border border-error/30 text-error px-4 py-3 rounded-lg text-sm">
+                            {error}
+                        </div>
+                    )}
+
                     {/* Submit Button */}
                     <button
                         type="submit"
@@ -104,6 +141,7 @@ export function JoinGamePage() {
                     <button
                         onClick={() => navigate('/')}
                         className="text-text-muted hover:text-text-primary transition-colors text-sm"
+                        disabled={isJoining}
                     >
                         ← Назад на главную
                     </button>
