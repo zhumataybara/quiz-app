@@ -360,6 +360,7 @@ export function setupSocketHandlers(io) {
                 // Send personalized results to each player
                 for (const player of updatedPlayers) {
                     // Get player's answers for this round
+                    console.log(`🔍 Fetching answers for player ${player.nickname} (${player.id}) for round ${roundId}`);
                     const playerAnswers = await prisma.answer.findMany({
                         where: {
                             playerId: player.id,
@@ -372,10 +373,18 @@ export function setupSocketHandlers(io) {
                         }
                     });
 
+                    console.log(`📝 Found ${playerAnswers.length} answers for ${player.nickname}:`, playerAnswers.map(a => ({
+                        questionId: a.questionId,
+                        submittedText: a.submittedText,
+                        isCorrect: a.isCorrect
+                    })));
+
                     // Format questions with player's answers
                     const questionResults = round.questions.map(q => {
                         const playerAnswer = playerAnswers.find(a => a.questionId === q.id);
                         const correctAnswer = q.correctAnswers[0]; // Assume first is correct
+
+                        console.log(`❓ Question ${q.id}: playerAnswer=${playerAnswer?.submittedText || 'NOT FOUND'}, correct=${correctAnswer?.title}`);
 
                         return {
                             questionTitle: q.title || correctAnswer?.title || 'Без названия',
