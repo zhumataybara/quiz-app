@@ -15,6 +15,15 @@ import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
+// Health check endpoint (for monitoring and keeping server awake)
+router.get('/health', (req, res) => {
+    res.json({
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+    });
+});
+
 // Auth routes
 router.post('/auth/register', register);
 router.post('/auth/login', login);
